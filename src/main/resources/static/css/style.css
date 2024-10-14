@@ -1,0 +1,134 @@
+/* src/main/resources/static/css/style.css */
+
+:root {
+    --primary-color: #4B7BDB; /* RGB(75, 123, 219) */
+    --primary-hover-color: #3A69C8;
+    --background-color: #f0f2f5;
+    --form-background: #ffffff;
+    --text-color: #333333;
+    --label-color: #555555;
+    --error-color: #f44336;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--background-color);
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.container {
+    width: 100%;
+    max-width: 400px;
+    padding: 20px;
+}
+
+.form-box {
+    background-color: var(--form-background);
+    padding: 30px 40px;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.form-box h2 {
+    text-align: center;
+    margin-bottom: 25px;
+    color: var(--text-color);
+}
+
+.input-group {
+    margin-bottom: 20px;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--label-color);
+    font-weight: bold;
+}
+
+.input-group input[type="text"],
+.input-group input[type="password"],
+.input-group input[type="email"],
+.input-group input[type="file"] {
+    width: 100%;
+    padding: 10px 15px;
+    border: 1px solid #cccccc;
+    border-radius: 8px;
+    box-sizing: border-box;
+    transition: border-color 0.3s;
+}
+
+.input-group input[type="text"]:focus,
+.input-group input[type="password"]:focus,
+.input-group input[type="email"]:focus,
+.input-group input[type="file"]:focus {
+    border-color: var(--primary-color);
+    outline: none;
+}
+
+.button-group {
+    text-align: center;
+    margin-top: 15px;
+}
+
+.button-group button,
+.button-group .button {
+    width: 100%;
+    padding: 12px 0;
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.button-group button:hover,
+.button-group .button:hover {
+    background-color: var(--primary-hover-color);
+    transform: translateY(-2px);
+}
+
+.button-group button {
+    background-color: var(--primary-color); /* 主色调用于登录按钮 */
+}
+
+.button-group .secondary-button {
+    background-color: var(--primary-color); /* 主色调用于注册按钮 */
+}
+
+.links {
+    text-align: center;
+    margin-top: 15px;
+}
+
+.links a {
+    color: var(--primary-color); /* 主色调用于链接 */
+    text-decoration: none;
+    font-weight: bold;
+    transition: color 0.3s;
+}
+
+.links a:hover {
+    color: var(--primary-hover-color);
+}
+
+.messages {
+    margin-top: 15px;
+    text-align: center;
+}
+
+.success {
+    color: var(--primary-color); /* 主色调用于成功消息 */
+}
+
+.error {
+    color: var(--error-color);
+}

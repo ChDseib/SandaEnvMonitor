@@ -1,0 +1,16 @@
+<!-- src/main/resources/templates/home.html -->
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>SandaEnvMonitor - 主页</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="container">
+    <h1>欢迎来到 SandaEnvMonitor 系统</h1>
+    <p>这里将展示环境监测数据和预警信息。</p>
+    <a th:href="@{/logout}">登出</a>
+</div>
+</body>
+</html>
