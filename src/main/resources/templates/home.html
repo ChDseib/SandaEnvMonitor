@@ -1,3 +1,5 @@
+<!-- src/main/resources/templates/home.html -->
+
 <!DOCTYPE html>
 <html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
 <head>
@@ -335,8 +337,8 @@
                 <p class="value">65%</p>
             </div>
             <div class="data-item">
-                <h3>风速</h3>
-                <p class="value">12 km/h</p>
+                <h3>紫外线</h3>
+                <p class="value">弱</p>
             </div>
             <div class="chart-overlay">
                 <canvas id="currentWeatherChart"></canvas>
@@ -349,16 +351,20 @@
         <div class="module-content">
             <h2>气象数据</h2>
             <div class="data-item">
-                <h3>气压</h3>
+                <h3>大气压</h3>
                 <p class="value">1013 hPa</p>
             </div>
             <div class="data-item">
-                <h3>UV指数</h3>
-                <p class="value">3</p>
+                <h3>能见度</h3>
+                <p class="value">110 km</p>
             </div>
             <div class="data-item">
                 <h3>空气质量</h3>
                 <p class="value">75 (良好)</p>
+            </div>
+            <div class="data-item">
+                <h3>降水量</h3>
+                <p class="value">225 mm</p> <!-- 新增降水量 -->
             </div>
             <div class="chart-overlay">
                 <canvas id="pressureDataChart"></canvas>
@@ -366,23 +372,45 @@
         </div>
     </div>
 
+
     <!-- 未来天气预报模块 -->
     <div class="weather-module" id="future-weather">
         <div class="module-content">
-            <h2>未来天气预报</h2>
+            <h2>未来七天天气预报</h2>
             <div class="data-item">
-                <h3>明天</h3>
+                <h3>今天 (10月22日)</h3>
                 <p class="value">22°C, 多云</p>
             </div>
             <div class="data-item">
-                <h3>后天</h3>
+                <h3>星期二 (10月23日)</h3>
                 <p class="value">24°C, 小雨</p>
+            </div>
+            <div class="data-item">
+                <h3>星期三 (10月24日)</h3>
+                <p class="value">20°C, 阴天</p>
+            </div>
+            <div class="data-item">
+                <h3>星期四 (10月25日)</h3>
+                <p class="value">21°C, 晴天</p>
+            </div>
+            <div class="data-item">
+                <h3>星期五 (10月26日)</h3>
+                <p class="value">23°C, 多云</p>
+            </div>
+            <div class="data-item">
+                <h3>星期六 (10月27日)</h3>
+                <p class="value">25°C, 小雨</p>
+            </div>
+            <div class="data-item">
+                <h3>星期日 (10月28日)</h3>
+                <p class="value">26°C, 晴天</p>
             </div>
             <div class="chart-overlay">
                 <canvas id="futureWeatherChart"></canvas>
             </div>
         </div>
     </div>
+
 
     <!-- 天气状态模块 -->
     <div class="weather-module" id="weather-state">
@@ -473,10 +501,10 @@
         new Chart(ctxCurrent, {
             type: 'bar',
             data: {
-                labels: ['温度', '湿度', '风速'],
+                labels: ['温度', '湿度', '紫外线'],
                 datasets: [{
                     label: '当前天气数据',
-                    data: [25, 65, 12],
+                    data: [25, 65, 3],
                     backgroundColor: ['var(--primary-color)', '#34c759', '#ff9500']
                 }]
             },
@@ -496,10 +524,10 @@
         new Chart(ctxPressure, {
             type: 'line',
             data: {
-                labels: ['气压', 'UV指数', '空气质量'],
+                labels: ['大气压', '能见度', '空气质量', '降水量'], // 新增降水量标签
                 datasets: [{
                     label: '气象数据',
-                    data: [1013, 3, 75],
+                    data: [1013, 110, 75, 225], // 新增降水量数据
                     backgroundColor: 'rgba(75, 123, 219, 0.2)',
                     borderColor: 'rgba(75, 123, 219, 1)',
                     borderWidth: 2,
@@ -518,16 +546,18 @@
             }
         });
 
+
         // 未来天气图表
         const ctxFuture = document.getElementById('futureWeatherChart').getContext('2d');
         new Chart(ctxFuture, {
-            type: 'pie',
+            type: 'line',
             data: {
-                labels: ['明天', '后天'],
+                labels: ['10月22', '10月23', '10月24', '10月25', '10月26', '10月27', '10月28'], // 更新为七天的标签
                 datasets: [{
-                    label: '未来天气预报',
-                    data: [22, 24],
-                    backgroundColor: ['var(--primary-color)', '#34c759']
+                    label: '未来七天天气预报',
+                    data: [22, 24, 20, 21, 23, 25, 26], // 更新为七天的温度数据
+                    backgroundColor: 'rgba(75, 123, 219, 0.2)',
+                    borderColor: 'rgba(75, 123, 219, 1)',
                 }]
             },
             options: {
@@ -540,9 +570,21 @@
                             color: '#555'
                         }
                     }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: false, // 允许从非零开始
+                        min: 10, // 设置y轴最小值
+                        max: 40, // 设置y轴最大值
+                        title: {
+                            display: true,
+                            text: '温度 (°C)' // y轴标题
+                        }
+                    },
                 }
             }
         });
+
 
         // 天气状态图表
         const ctxState = document.getElementById('weatherStateChart').getContext('2d');
@@ -578,7 +620,7 @@
                 labels: ['台风预警', '暴雨预警', '寒潮预警'],
                 datasets: [{
                     label: '警报类型',
-                    data: [1, 2, 0],
+                    data: [7, 2, 1],
                     backgroundColor: ['#ff3b30', '#ff9500', '#ffcc00']
                 }]
             },
@@ -589,8 +631,19 @@
                     legend: {
                         display: false
                     }
-                }
-            }
+
+
+                },
+                scales: {
+                    y: {
+                        min: 0, // 设置y轴最小值
+                        max: 10, // 设置y轴最大值
+                        title: {
+                            display: true,
+                            text: '温度 (°C)' // y轴标题
+                        }
+                    },
+                }}
         });
     });
 
