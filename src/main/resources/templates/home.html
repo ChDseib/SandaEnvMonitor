@@ -2,58 +2,140 @@
 <html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <!-- 添加响应式元标签 -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>天气监测系统</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
+    <!-- 引入 Font Awesome 图标库（可选，如果不再使用，可以移除） -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-pjw1b5k5WkP/lvGQ6kHjTphPo4KZx8BvK7Z4KKn/8L5P7WHPFehrPZ3Gv8q/YymrRgrH5fEmRLYzG0a8IcYw7Q==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
+        /* 定义 CSS 变量 */
+        :root {
+            --primary-color: #4B7BDB; /* 主色调 RGB(75, 123, 219) */
+            --primary-hover-color: #3A69C8;
+            --background-color: #f5f5f7;
+            --form-background: #ffffff;
+            --text-color: #333333;
+            --label-color: #555555;
+            --error-color: #f44336;
+        }
+
         /* 整体页面样式 */
         body {
-            font-family: Arial, sans-serif;
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--background-color);
             margin: 0;
             padding: 0;
-            height: 100vh;
+            min-height: 100vh;
             display: flex;
-            flex-direction: column;
             justify-content: center;
             align-items: center;
         }
 
         .container {
-            width: 95%;
-            max-width: 1200px;
+            width: 88vw; /* 占据视口宽度的88% */
+            height: 88vh; /* 占据视口高度的88% */
+            max-width: 1400px; /* 最大宽度 */
+            max-height: 1400px; /* 最大高度 */
+            padding: 20px;
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            grid-gap: 30px;
-            background-color: rgba(255, 255, 255, 0.9);
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            position: relative; /* 设置相对定位以调整按钮位置 */
-            padding-bottom: 100px; /* 为按钮留出空间 */
+            grid-template-areas:
+                "current-weather pressure-data future-weather alert-data"
+                "weather-state pressure-data future-weather alert-data";
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* 自适应列 */
+            grid-template-rows: auto;
+            gap: 20px;
+            box-sizing: border-box;
+            background-color: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: auto; /* 防止内容溢出 */
         }
 
         /* 大模块样式 */
         .weather-module {
-            background-color: #f9f9f9; /* 修改模块背景色 */
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 增加更柔和的阴影 */
-            transition: transform 0.3s;
-            border: 1px solid #e0e0e0; /* 添加边框 */
+            background-color: #ffffff;
+            border-radius: 20px;
+            padding: 0; /* 移除外部 padding */
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            transition: box-shadow 0.3s;
+            position: relative;
+            overflow: hidden; /* 保证内容不会溢出 */
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
 
+        /* 包装模块内容 */
+        .module-content {
+            padding: 25px;
+            transition: transform 0.3s;
+            height: 100%;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            z-index: 1; /* 设置低于 .chart-overlay */
+        }
+
+        /* 定义各模块在网格中的位置 */
+        #current-weather {
+            grid-area: current-weather;
+            background-color: #f0f4f8;
+        }
+
+        #pressure-data {
+            grid-area: pressure-data;
+            background-color: #f9fbfc;
+        }
+
+        #future-weather {
+            grid-area: future-weather;
+            background-color: #f0f4f8;
+        }
+
+        #weather-state {
+            grid-area: weather-state;
+            background-color: #f9fbfc;
+        }
+
+        #alert-data {
+            grid-area: alert-data;
+            background-color: #fff5f5; /* 警报模块特定背景色 */
+        }
+
+        /* 为所有模块添加悬浮缩放效果，应用到 .module-content */
+        .weather-module:hover .module-content {
+            transform: scale(1.03);
+        }
+
+        /* 为所有模块添加悬浮阴影效果 */
         .weather-module:hover {
-            transform: translateY(-5px); /* 模块悬停效果 */
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
         }
 
         /* 每个小数据项样式 */
         .data-item {
-            border-bottom: 1px solid #eee;
-            padding: 10px 0;
+            border-bottom: 1px solid #e0e0e0;
+            padding: 12px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: opacity 0.3s, transform 0.3s;
+        }
+
+        /* 为悬浮模块的内容项添加缩放效果 */
+        .weather-module:hover .data-item {
+            opacity: 0;
+            transform: scale(0.95);
+        }
+
+        /* "当前天气" 和 "天气状态" 模块在悬浮时的数据项保持不变 */
+        #current-weather:hover .data-item,
+        #weather-state:hover .data-item {
+            opacity: 1;
+            transform: scale(1);
         }
 
         .data-item:last-child {
@@ -63,140 +145,495 @@
         /* 小数据项标题和内容样式 */
         .data-item h3 {
             margin: 0;
-            font-size: 1.1em;
-            color: #333;
-        }
-
-        .data-item p {
-            margin: 5px 0;
-            font-size: 0.9em; /* 调整字体大小 */
+            font-size: 1em;
             color: #555;
         }
 
+        .data-item p {
+            margin: 0;
+            font-size: 1em;
+            color: #333;
+            font-weight: 500;
+        }
+
         .data-item .value {
-            font-size: 1.5em;
-            font-weight: bold;
+            font-size: 1.2em;
+            font-weight: 600;
             color: #000;
         }
 
         /* 导航按钮样式 */
         .btn-group {
+            position: fixed;
+            right: 20px;
+            bottom: 20px;
             display: flex;
-            justify-content: center; /* 按钮居中 */
-            position: absolute; /* 设置为绝对定位 */
-            bottom: 20px; /* 使按钮靠近底部 */
-            left: 50%; /* 水平居中 */
-            transform: translateX(-50%); /* 将按钮容器居中 */
-            width: 80%; /* 设置按钮容器的宽度 */
-            gap: 10px; /* 按钮之间的间距 */
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            z-index: 1000;
         }
 
         .btn {
-            background-color: #4caf50;
+            background-color: var(--primary-color);
             color: white;
-            width: 90px; /* 设置按钮宽度 */
-            height: 40px; /* 设置按钮高度 */
+            width: 60px;
+            height: 60px;
             border: none;
-            border-radius: 5px;
-            font-size: 1em; /* 调整字体大小 */
+            border-radius: 50%;
+            font-size: 1.5em;
             cursor: pointer;
-            transition: background-color 0.3s ease;
-            display: flex; /* 使用 Flexbox 来居中文本 */
-            justify-content: center; /* 水平居中 */
-            align-items: center; /* 垂直居中 */
+            transition: background-color 0.3s ease, transform 0.3s, opacity 0.3s, visibility 0.3s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
         .btn:hover {
-            background-color: #45a049;
+            background-color: var(--primary-hover-color);
+            transform: scale(1.1);
+        }
+
+        /* 点击效果 */
+        .btn:active {
+            transform: scale(0.95);
         }
 
         /* 登出按钮样式 */
         .logout-btn {
-            background-color: #f44336; /* 红色 */
+            background-color: #ff3b30;
         }
 
         .logout-btn:hover {
-            background-color: #e53935; /* 更深的红色 */
+            background-color: #e03128;
         }
 
-        /* 响应式布局 */
+        /* 子按钮隐藏 */
+        .btn-group .btn-child {
+            opacity: 0;
+            transform: translateY(20px);
+            visibility: hidden;
+            transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s;
+        }
+
+        /* 主按钮激活时显示子按钮 */
+        .btn-group.active .btn-child {
+            opacity: 1;
+            transform: translateY(0);
+            visibility: visible;
+            transition-delay: 0.1s;
+        }
+
+        /* 可视化图表样式 */
+        .chart-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #ffffff; /* 不透明背景 */
+            opacity: 0;
+            visibility: hidden;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            box-sizing: border-box;
+            border-radius: 20px;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+            z-index: 2; /* 确保在 .module-content 之上 */
+        }
+
+        .weather-module:hover .chart-overlay {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .chart-container {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 1200px) {
+            .container {
+                grid-template-areas:
+                    "current-weather pressure-data future-weather"
+                    "weather-state pressure-data alert-data";
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            }
+        }
+
+        @media (max-width: 900px) {
+            .container {
+                grid-template-areas:
+                    "current-weather"
+                    "pressure-data"
+                    "future-weather"
+                    "weather-state"
+                    "alert-data";
+                grid-template-columns: 1fr;
+                grid-template-rows: auto;
+            }
+
+            .btn-group {
+                right: 10px;
+                bottom: 10px;
+            }
+
+            .btn {
+                width: 50px;
+                height: 50px;
+                font-size: 1.2em;
+            }
+        }
+
         @media (max-width: 600px) {
+            .container {
+                padding: 10px;
+                gap: 10px;
+            }
+
+            .weather-module {
+                padding: 15px;
+            }
+
             .data-item {
                 padding: 8px 0;
             }
+
+            .btn-group {
+                flex-direction: row;
+                bottom: 10px;
+                right: 50%;
+                transform: translateX(50%);
+                gap: 10px;
+            }
+
             .btn {
-                width: 80px; /* 小屏幕下的按钮宽度 */
-                height: 35px; /* 小屏幕下的按钮高度 */
-                font-size: 0.9em; /* 调整小屏幕下的字体大小 */
+                width: 40px;
+                height: 40px;
+                font-size: 1em;
             }
         }
     </style>
+    <!-- 引入图表库，例如 Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
 <div class="container">
-    <!-- 温度模块 -->
-    <div class="weather-module">
-        <h2>当前天气</h2>
-        <div class="data-item">
-            <h3>温度</h3>
-            <p class="value">25°C</p>
-        </div>
-        <div class="data-item">
-            <h3>湿度</h3>
-            <p class="value">65%</p>
-        </div>
-        <div class="data-item">
-            <h3>风速</h3>
-            <p class="value">12 km/h</p>
-        </div>
-    </div>
-
-    <!-- 气压模块 -->
-    <div class="weather-module">
-        <h2>气象数据</h2>
-        <div class="data-item">
-            <h3>气压</h3>
-            <p class="value">1013 hPa</p>
-        </div>
-        <div class="data-item">
-            <h3>UV指数</h3>
-            <p class="value">3</p>
-        </div>
-        <div class="data-item">
-            <h3>空气质量</h3>
-            <p class="value">75 (良好)</p>
+    <!-- 当前天气模块 -->
+    <div class="weather-module" id="current-weather">
+        <div class="module-content">
+            <h2>当前天气</h2>
+            <div class="data-item">
+                <h3>温度</h3>
+                <p class="value">25°C</p>
+            </div>
+            <div class="data-item">
+                <h3>湿度</h3>
+                <p class="value">65%</p>
+            </div>
+            <div class="data-item">
+                <h3>风速</h3>
+                <p class="value">12 km/h</p>
+            </div>
+            <div class="chart-overlay">
+                <canvas id="currentWeatherChart"></canvas>
+            </div>
         </div>
     </div>
 
-    <!-- 未来天气模块 -->
-    <div class="weather-module">
-        <h2>未来天气预报</h2>
-        <div class="data-item">
-            <h3>明天</h3>
-            <p class="value">22°C, 多云</p>
+    <!-- 气象数据模块 -->
+    <div class="weather-module" id="pressure-data">
+        <div class="module-content">
+            <h2>气象数据</h2>
+            <div class="data-item">
+                <h3>气压</h3>
+                <p class="value">1013 hPa</p>
+            </div>
+            <div class="data-item">
+                <h3>UV指数</h3>
+                <p class="value">3</p>
+            </div>
+            <div class="data-item">
+                <h3>空气质量</h3>
+                <p class="value">75 (良好)</p>
+            </div>
+            <div class="chart-overlay">
+                <canvas id="pressureDataChart"></canvas>
+            </div>
         </div>
-        <div class="data-item">
-            <h3>后天</h3>
-            <p class="value">24°C, 小雨</p>
+    </div>
+
+    <!-- 未来天气预报模块 -->
+    <div class="weather-module" id="future-weather">
+        <div class="module-content">
+            <h2>未来天气预报</h2>
+            <div class="data-item">
+                <h3>明天</h3>
+                <p class="value">22°C, 多云</p>
+            </div>
+            <div class="data-item">
+                <h3>后天</h3>
+                <p class="value">24°C, 小雨</p>
+            </div>
+            <div class="chart-overlay">
+                <canvas id="futureWeatherChart"></canvas>
+            </div>
         </div>
     </div>
 
     <!-- 天气状态模块 -->
-    <div class="weather-module">
-        <h2>天气状态</h2>
-        <div class="data-item">
-            <h3>当前状态</h3>
-            <p class="value">晴天</p>
+    <div class="weather-module" id="weather-state">
+        <div class="module-content">
+            <h2>天气状态</h2>
+            <div class="data-item">
+                <h3>当前状态</h3>
+                <p class="value">晴天</p>
+            </div>
+            <div class="chart-overlay">
+                <canvas id="weatherStateChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- 重要警报数据模块 -->
+    <div class="weather-module" id="alert-data">
+        <div class="module-content">
+            <h2>重要警报</h2>
+            <div class="data-item">
+                <h3>警报类型</h3>
+                <p class="value">台风预警</p>
+            </div>
+            <div class="data-item">
+                <h3>严重程度</h3>
+                <p class="value">高</p>
+            </div>
+            <div class="data-item">
+                <h3>生效时间</h3>
+                <p class="value">2024-05-01 08:00</p>
+            </div>
+            <div class="chart-overlay">
+                <canvas id="alertDataChart"></canvas>
+            </div>
         </div>
     </div>
 
     <!-- 导航按钮 -->
-    <div class="btn-group">
-        <button class="btn">刷新</button>
-        <button class="btn">导入</button>
-        <button class="btn">设置</button>
-        <a href="/logout" class="btn logout-btn">登出</a> <!-- 登出按钮 -->
+    <div class="btn-group" id="btnGroup">
+        <!-- 更换图标为SVG并确保颜色为白色 -->
+        <a href="/logout" class="btn btn-child logout-btn" title="登出" aria-label="登出">
+            <!-- 锁图标 SVG -->
+            <svg width="24" height="24" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M23.9917 6H6V42H24" stroke="#ffffff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M33 33L42 24L33 15" stroke="#ffffff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M16 23.9917H42" stroke="#ffffff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </a>
+        <button class="btn btn-child" onclick="refreshData()" title="刷新" aria-label="刷新">
+            <!-- 刷新图标 SVG -->
+            <svg width="24" height="24" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M42 8V24" stroke="#ffffff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M6 24L6 40" stroke="#ffffff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M42 24C42 14.0589 33.9411 6 24 6C18.9145 6 14.3216 8.10896 11.0481 11.5M6 24C6 33.9411 14.0589 42 24 42C28.8556 42 33.2622 40.0774 36.5 36.9519" stroke="#ffffff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </button>
+        <button class="btn btn-child" onclick="importData()" title="导入" aria-label="导入">
+            <!-- 下载图标 SVG -->
+            <svg width="24" height="24" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M24.0079 41L23.9995 23" stroke="#ffffff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M40.5178 34.3161C43.8044 32.005 45.2136 27.8302 44.0001 24C42.7866 20.1698 39.0705 18.0714 35.0527 18.0745H32.7317C31.2144 12.1613 26.2082 7.79572 20.1435 7.0972C14.0787 6.39868 8.21121 9.5118 5.38931 14.9253C2.56741 20.3388 3.37545 26.9317 7.42115 31.5035" stroke="#ffffff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M30.3638 27.6359L23.9998 21.272L17.6358 27.6359" stroke="#ffffff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </button>
+        <button class="btn btn-child" onclick="openSettings()" title="设置" aria-label="设置">
+            <!-- 齿轮图标 SVG -->
+            <svg width="24" height="24" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M18.2838 43.1713C14.9327 42.1736 11.9498 40.3213 9.58787 37.867C10.469 36.8227 11 35.4734 11 34.0001C11 30.6864 8.31371 28.0001 5 28.0001C4.79955 28.0001 4.60139 28.01 4.40599 28.0292C4.13979 26.7277 4 25.3803 4 24.0001C4 21.9095 4.32077 19.8938 4.91579 17.9995C4.94381 17.9999 4.97188 18.0001 5 18.0001C8.31371 18.0001 11 15.3138 11 12.0001C11 11.0488 10.7786 10.1493 10.3846 9.35011C12.6975 7.1995 15.5205 5.59002 18.6521 4.72314C19.6444 6.66819 21.6667 8.00013 24 8.00013C26.3333 8.00013 28.3556 6.66819 29.3479 4.72314C32.4795 5.59002 35.3025 7.1995 37.6154 9.35011C37.2214 10.1493 37 11.0488 37 12.0001C37 15.3138 39.6863 18.0001 43 18.0001C43.0281 18.0001 43.0562 17.9999 43.0842 17.9995C43.6792 19.8938 44 21.9095 44 24.0001C44 25.3803 43.8602 26.7277 43.594 28.0292C43.3986 28.01 43.2005 28.0001 43 28.0001C39.6863 28.0001 37 30.6864 37 34.0001C37 35.4734 37.531 36.8227 38.4121 37.867C36.0502 40.3213 33.0673 42.1736 29.7162 43.1713Z" fill="none" stroke="#ffffff" stroke-width="4" stroke-linejoin="round"/>
+                <path d="M24 31C27.866 31 31 27.866 31 24C31 20.134 27.866 17 24 17C20.134 17 17 20.134 17 24C17 27.866 20.134 31 24 31Z" fill="none" stroke="#ffffff" stroke-width="4" stroke-linejoin="round"/>
+            </svg>
+        </button>
+        <button class="btn" id="mainBtn" title="菜单" aria-label="菜单">
+            <!-- 菜单图标 SVG -->
+            <svg width="24" height="24" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M7.94971 11.9497H39.9497" stroke="#ffffff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7.94971 23.9497H39.9497" stroke="#ffffff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7.94971 35.9497H39.9497" stroke="#ffffff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </button>
     </div>
 </div>
+
+<script>
+    // 初始化图表
+    document.addEventListener("DOMContentLoaded", function () {
+        // 当前天气图表
+        const ctxCurrent = document.getElementById('currentWeatherChart').getContext('2d');
+        new Chart(ctxCurrent, {
+            type: 'bar',
+            data: {
+                labels: ['温度', '湿度', '风速'],
+                datasets: [{
+                    label: '当前天气数据',
+                    data: [25, 65, 12],
+                    backgroundColor: ['var(--primary-color)', '#34c759', '#ff9500']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+
+        // 气象数据图表
+        const ctxPressure = document.getElementById('pressureDataChart').getContext('2d');
+        new Chart(ctxPressure, {
+            type: 'line',
+            data: {
+                labels: ['气压', 'UV指数', '空气质量'],
+                datasets: [{
+                    label: '气象数据',
+                    data: [1013, 3, 75],
+                    backgroundColor: 'rgba(75, 123, 219, 0.2)',
+                    borderColor: 'rgba(75, 123, 219, 1)',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+
+        // 未来天气图表
+        const ctxFuture = document.getElementById('futureWeatherChart').getContext('2d');
+        new Chart(ctxFuture, {
+            type: 'pie',
+            data: {
+                labels: ['明天', '后天'],
+                datasets: [{
+                    label: '未来天气预报',
+                    data: [22, 24],
+                    backgroundColor: ['var(--primary-color)', '#34c759']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            color: '#555'
+                        }
+                    }
+                }
+            }
+        });
+
+        // 天气状态图表
+        const ctxState = document.getElementById('weatherStateChart').getContext('2d');
+        new Chart(ctxState, {
+            type: 'doughnut',
+            data: {
+                labels: ['晴天', '多云', '小雨'],
+                datasets: [{
+                    label: '天气状态',
+                    data: [70, 20, 10],
+                    backgroundColor: ['var(--primary-color)', '#34c759', '#ff3b30']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            color: '#555'
+                        }
+                    }
+                }
+            }
+        });
+
+        // 重要警报数据图表
+        const ctxAlert = document.getElementById('alertDataChart').getContext('2d');
+        new Chart(ctxAlert, {
+            type: 'bar',
+            data: {
+                labels: ['台风预警', '暴雨预警', '寒潮预警'],
+                datasets: [{
+                    label: '警报类型',
+                    data: [1, 2, 0],
+                    backgroundColor: ['#ff3b30', '#ff9500', '#ffcc00']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+    });
+
+    // 按钮功能示例
+    function refreshData() {
+        // 实现数据刷新逻辑，例如通过API获取最新数据
+        alert('刷新数据功能尚未实现。');
+    }
+
+    function importData() {
+        // 实现数据导入逻辑
+        alert('导入数据功能尚未实现。');
+    }
+
+    function openSettings() {
+        // 实现设置界面
+        alert('设置功能尚未实现。');
+    }
+
+    // 导航按钮动画
+    const btnGroup = document.getElementById('btnGroup');
+    const mainBtn = document.getElementById('mainBtn');
+
+    mainBtn.addEventListener('click', () => {
+        btnGroup.classList.toggle('active');
+        // 切换主按钮图标
+        if (btnGroup.classList.contains('active')) {
+            mainBtn.innerHTML = `
+                <svg width="24" height="24" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M6 6L42 42" stroke="#ffffff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M42 6L6 42" stroke="#ffffff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            `; // 关闭图标
+        } else {
+            mainBtn.innerHTML = `
+                <svg width="24" height="24" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M7.94971 11.9497H39.9497" stroke="#ffffff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M7.94971 23.9497H39.9497" stroke="#ffffff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M7.94971 35.9497H39.9497" stroke="#ffffff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            `; // 菜单图标
+        }
+    });
+</script>
 </body>
 </html>
