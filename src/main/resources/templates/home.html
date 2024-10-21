@@ -1,16 +1,203 @@
-<!-- src/main/resources/templates/home.html -->
-
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>SandaEnvMonitor - 主页</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>天气监测系统</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        /* 整体页面样式 */
+        body {
+            font-family: Arial, sans-serif;
+            background-image: url('/images/weather-background.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            width: 95%;
+            max-width: 1200px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            grid-gap: 30px;
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            position: relative; /* 设置相对定位以调整按钮位置 */
+            padding-bottom: 100px; /* 为按钮留出空间 */
+        }
+
+        /* 大模块样式 */
+        .weather-module {
+            background-color: #f9f9f9; /* 修改模块背景色 */
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 增加更柔和的阴影 */
+            transition: transform 0.3s;
+            border: 1px solid #e0e0e0; /* 添加边框 */
+        }
+
+        .weather-module:hover {
+            transform: translateY(-5px); /* 模块悬停效果 */
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        /* 每个小数据项样式 */
+        .data-item {
+            border-bottom: 1px solid #eee;
+            padding: 10px 0;
+        }
+
+        .data-item:last-child {
+            border-bottom: none;
+        }
+
+        /* 小数据项标题和内容样式 */
+        .data-item h3 {
+            margin: 0;
+            font-size: 1.1em;
+            color: #333;
+        }
+
+        .data-item p {
+            margin: 5px 0;
+            font-size: 0.9em; /* 调整字体大小 */
+            color: #555;
+        }
+
+        .data-item .value {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #000;
+        }
+
+        /* 导航按钮样式 */
+        .btn-group {
+            display: flex;
+            justify-content: center; /* 按钮居中 */
+            position: absolute; /* 设置为绝对定位 */
+            bottom: 20px; /* 使按钮靠近底部 */
+            left: 50%; /* 水平居中 */
+            transform: translateX(-50%); /* 将按钮容器居中 */
+            width: 80%; /* 设置按钮容器的宽度 */
+            gap: 10px; /* 按钮之间的间距 */
+        }
+
+        .btn {
+            background-color: #4caf50;
+            color: white;
+            width: 90px; /* 设置按钮宽度 */
+            height: 40px; /* 设置按钮高度 */
+            border: none;
+            border-radius: 5px;
+            font-size: 1em; /* 调整字体大小 */
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            display: flex; /* 使用 Flexbox 来居中文本 */
+            justify-content: center; /* 水平居中 */
+            align-items: center; /* 垂直居中 */
+        }
+
+        .btn:hover {
+            background-color: #45a049;
+        }
+
+        /* 登出按钮样式 */
+        .logout-btn {
+            background-color: #f44336; /* 红色 */
+        }
+
+        .logout-btn:hover {
+            background-color: #e53935; /* 更深的红色 */
+        }
+
+        /* 响应式布局 */
+        @media (max-width: 600px) {
+            .data-item {
+                padding: 8px 0;
+            }
+            .btn {
+                width: 80px; /* 小屏幕下的按钮宽度 */
+                height: 35px; /* 小屏幕下的按钮高度 */
+                font-size: 0.9em; /* 调整小屏幕下的字体大小 */
+            }
+        }
+    </style>
 </head>
 <body>
 <div class="container">
-    <h1>欢迎来到 SandaEnvMonitor 系统</h1>
-    <p>这里将展示环境监测数据和预警信息。</p>
-    <a th:href="@{/logout}">登出</a>
+    <!-- 温度模块 -->
+    <div class="weather-module">
+        <h2>当前天气</h2>
+        <div class="data-item">
+            <h3>温度</h3>
+            <p class="value">25°C</p>
+        </div>
+        <div class="data-item">
+            <h3>湿度</h3>
+            <p class="value">65%</p>
+        </div>
+        <div class="data-item">
+            <h3>风速</h3>
+            <p class="value">12 km/h</p>
+        </div>
+    </div>
+
+    <!-- 气压模块 -->
+    <div class="weather-module">
+        <h2>气象数据</h2>
+        <div class="data-item">
+            <h3>气压</h3>
+            <p class="value">1013 hPa</p>
+        </div>
+        <div class="data-item">
+            <h3>UV指数</h3>
+            <p class="value">3</p>
+        </div>
+        <div class="data-item">
+            <h3>空气质量</h3>
+            <p class="value">75 (良好)</p>
+        </div>
+    </div>
+
+    <!-- 未来天气模块 -->
+    <div class="weather-module">
+        <h2>未来天气预报</h2>
+        <div class="data-item">
+            <h3>明天</h3>
+            <p class="value">22°C, 多云</p>
+        </div>
+        <div class="data-item">
+            <h3>后天</h3>
+            <p class="value">24°C, 小雨</p>
+        </div>
+    </div>
+
+    <!-- 天气状态模块 -->
+    <div class="weather-module">
+        <h2>天气状态</h2>
+        <div class="data-item">
+            <h3>当前状态</h3>
+            <p class="value">晴天</p>
+        </div>
+    </div>
+
+    <!-- 导航按钮 -->
+    <div class="btn-group">
+        <button class="btn">刷新</button>
+        <button class="btn">导入</button>
+        <button class="btn">设置</button>
+        <a href="/logout" class="btn logout-btn">登出</a> <!-- 登出按钮 -->
+    </div>
 </div>
 </body>
 </html>
