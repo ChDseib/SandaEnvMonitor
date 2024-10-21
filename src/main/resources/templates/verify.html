@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>邮箱验证</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="container">
+    <div class="form-box">
+        <h2>邮箱验证</h2>
+        <div th:if="${message}" class="success">
+            <p th:text="${message}"></p>
+        </div>
+        <div th:if="${error}" class="error">
+            <p th:text="${error}"></p>
+        </div>
+        <div class="button-group">
+            <a th:href="@{/login}" class="button">前往登录</a>
+        </div>
+    </div>
+</div>
+</body>
+</html>

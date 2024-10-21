@@ -36,6 +36,11 @@
         <div th:if="${error}" class="error">
             <p th:text="${error}"></p>
         </div>
+
+        <!-- 显示验证提示信息 -->
+        <div th:if="${message}" class="success">
+            <p th:text="${message}"></p>
+        </div>
     </div>
 </div>
 </body>

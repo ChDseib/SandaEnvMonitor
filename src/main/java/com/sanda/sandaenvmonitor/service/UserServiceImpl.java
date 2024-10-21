@@ -1,5 +1,3 @@
-// src/main/java/com/sanda/sandaenvmonitor/service/UserServiceImpl.java
-
 package com.sanda.sandaenvmonitor.service;
 
 import com.sanda.sandaenvmonitor.model.User;
@@ -28,6 +26,9 @@ public class UserServiceImpl implements UserService {
         String encodedPassword = passwordEncoder.encode(user.getPassword());
         user.setPassword(encodedPassword);
 
+        // 设置用户为禁用状态
+        user.setEnabled(false);
+
         // 保存用户信息
         userRepository.save(user);
     }
@@ -35,5 +36,15 @@ public class UserServiceImpl implements UserService {
     @Override
     public User findByUsername(String username) {
         return userRepository.findByUsername(username).orElse(null);
+    }
+
+    public void enableUser(String token) throws Exception {
+        // 根据 token 查找用户
+        User user = userRepository.findByVerificationToken(token)
+                .orElseThrow(() -> new Exception("无效的验证令牌！"));
+
+        // 启用用户
+        user.setEnabled(true);
+        userRepository.save(user);
     }
 }
