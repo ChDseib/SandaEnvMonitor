@@ -330,15 +330,15 @@
             <h2>当前天气</h2>
             <div class="data-item">
                 <h3>温度</h3>
-                <p class="value">25°C</p>
+                <p class="value" id="current-temp">--</p>
             </div>
             <div class="data-item">
                 <h3>湿度</h3>
-                <p class="value">65%</p>
+                <p class="value" id="current-humidity">--</p>
             </div>
             <div class="data-item">
                 <h3>紫外线</h3>
-                <p class="value">弱</p>
+                <p class="value" id="current-uv">--</p>
             </div>
             <div class="chart-overlay">
                 <canvas id="currentWeatherChart"></canvas>
@@ -352,19 +352,19 @@
             <h2>气象数据</h2>
             <div class="data-item">
                 <h3>大气压</h3>
-                <p class="value">1013 hPa</p>
+                <p class="value" id="pressure">--</p>
             </div>
             <div class="data-item">
                 <h3>能见度</h3>
-                <p class="value">110 km</p>
+                <p class="value" id="vis">--</p>
             </div>
             <div class="data-item">
                 <h3>空气质量</h3>
-                <p class="value">75 (良好)</p>
+                <p class="value" id="air-quality">--</p>
             </div>
             <div class="data-item">
                 <h3>降水量</h3>
-                <p class="value">225 mm</p> <!-- 新增降水量 -->
+                <p class="value" id="precip">--</p>
             </div>
             <div class="chart-overlay">
                 <canvas id="pressureDataChart"></canvas>
@@ -372,38 +372,37 @@
         </div>
     </div>
 
-
     <!-- 未来天气预报模块 -->
     <div class="weather-module" id="future-weather">
         <div class="module-content">
             <h2>未来七天天气预报</h2>
             <div class="data-item">
-                <h3>今天 (10月22日)</h3>
-                <p class="value">22°C, 多云</p>
+                <h3>今天 (<span id="future-date-0">--</span>)</h3>
+                <p class="value" id="future-temp-0">--</p>
             </div>
             <div class="data-item">
-                <h3>星期二 (10月23日)</h3>
-                <p class="value">24°C, 小雨</p>
+                <h3>星期二 (<span id="future-date-1">--</span>)</h3>
+                <p class="value" id="future-temp-1">--</p>
             </div>
             <div class="data-item">
-                <h3>星期三 (10月24日)</h3>
-                <p class="value">20°C, 阴天</p>
+                <h3>星期三 (<span id="future-date-2">--</span>)</h3>
+                <p class="value" id="future-temp-2">--</p>
             </div>
             <div class="data-item">
-                <h3>星期四 (10月25日)</h3>
-                <p class="value">21°C, 晴天</p>
+                <h3>星期四 (<span id="future-date-3">--</span>)</h3>
+                <p class="value" id="future-temp-3">--</p>
             </div>
             <div class="data-item">
-                <h3>星期五 (10月26日)</h3>
-                <p class="value">23°C, 多云</p>
+                <h3>星期五 (<span id="future-date-4">--</span>)</h3>
+                <p class="value" id="future-temp-4">--</p>
             </div>
             <div class="data-item">
-                <h3>星期六 (10月27日)</h3>
-                <p class="value">25°C, 小雨</p>
+                <h3>星期六 (<span id="future-date-5">--</span>)</h3>
+                <p class="value" id="future-temp-5">--</p>
             </div>
             <div class="data-item">
-                <h3>星期日 (10月28日)</h3>
-                <p class="value">26°C, 晴天</p>
+                <h3>星期日 (<span id="future-date-6">--</span>)</h3>
+                <p class="value" id="future-temp-6">--</p>
             </div>
             <div class="chart-overlay">
                 <canvas id="futureWeatherChart"></canvas>
@@ -411,14 +410,13 @@
         </div>
     </div>
 
-
     <!-- 天气状态模块 -->
     <div class="weather-module" id="weather-state">
         <div class="module-content">
             <h2>天气状态</h2>
             <div class="data-item">
                 <h3>当前状态</h3>
-                <p class="value">晴天</p>
+                <p class="value" id="current-state">--</p>
             </div>
             <div class="chart-overlay">
                 <canvas id="weatherStateChart"></canvas>
@@ -432,15 +430,15 @@
             <h2>重要警报</h2>
             <div class="data-item">
                 <h3>警报类型</h3>
-                <p class="value">台风预警</p>
+                <p class="value" id="alert-type">--</p>
             </div>
             <div class="data-item">
                 <h3>严重程度</h3>
-                <p class="value">高</p>
+                <p class="value" id="alert-severity">--</p>
             </div>
             <div class="data-item">
                 <h3>生效时间</h3>
-                <p class="value">2024-05-01 08:00</p>
+                <p class="value" id="alert-time">--</p>
             </div>
             <div class="chart-overlay">
                 <canvas id="alertDataChart"></canvas>
@@ -494,17 +492,25 @@
 </div>
 
 <script>
+    // 定义全局变量存储图表实例
+    let currentWeatherChart, pressureDataChart, futureWeatherChart, weatherStateChart, alertDataChart;
+
     // 初始化图表
     document.addEventListener("DOMContentLoaded", function () {
+        initializeCharts();
+        fetchAllData();
+    });
+
+    function initializeCharts() {
         // 当前天气图表
         const ctxCurrent = document.getElementById('currentWeatherChart').getContext('2d');
-        new Chart(ctxCurrent, {
+        currentWeatherChart = new Chart(ctxCurrent, {
             type: 'bar',
             data: {
-                labels: ['温度', '湿度', '紫外线'],
+                labels: ['温度 (°C)', '湿度 (%)', '紫外线指数'],
                 datasets: [{
                     label: '当前天气数据',
-                    data: [25, 65, 3],
+                    data: [0, 0, 0], // 初始值
                     backgroundColor: ['var(--primary-color)', '#34c759', '#ff9500']
                 }]
             },
@@ -521,13 +527,13 @@
 
         // 气象数据图表
         const ctxPressure = document.getElementById('pressureDataChart').getContext('2d');
-        new Chart(ctxPressure, {
+        pressureDataChart = new Chart(ctxPressure, {
             type: 'line',
             data: {
-                labels: ['大气压', '能见度', '空气质量', '降水量'], // 新增降水量标签
+                labels: ['大气压 (hPa)', '能见度 (km)', '空气质量指数', '降水量 (mm)'],
                 datasets: [{
                     label: '气象数据',
-                    data: [1013, 110, 75, 225], // 新增降水量数据
+                    data: [0, 0, 0, 0], // 初始值
                     backgroundColor: 'rgba(75, 123, 219, 0.2)',
                     borderColor: 'rgba(75, 123, 219, 1)',
                     borderWidth: 2,
@@ -546,16 +552,15 @@
             }
         });
 
-
         // 未来天气图表
         const ctxFuture = document.getElementById('futureWeatherChart').getContext('2d');
-        new Chart(ctxFuture, {
+        futureWeatherChart = new Chart(ctxFuture, {
             type: 'line',
             data: {
-                labels: ['10月22', '10月23', '10月24', '10月25', '10月26', '10月27', '10月28'], // 更新为七天的标签
+                labels: [], // 动态填充
                 datasets: [{
                     label: '未来七天天气预报',
-                    data: [22, 24, 20, 21, 23, 25, 26], // 更新为七天的温度数据
+                    data: [], // 动态填充
                     backgroundColor: 'rgba(75, 123, 219, 0.2)',
                     borderColor: 'rgba(75, 123, 219, 1)',
                 }]
@@ -573,28 +578,27 @@
                 },
                 scales: {
                     y: {
-                        beginAtZero: false, // 允许从非零开始
-                        min: 10, // 设置y轴最小值
-                        max: 40, // 设置y轴最大值
+                        beginAtZero: false,
+                        min: 10,
+                        max: 40,
                         title: {
                             display: true,
-                            text: '温度 (°C)' // y轴标题
+                            text: '温度 (°C)'
                         }
                     },
                 }
             }
         });
 
-
         // 天气状态图表
         const ctxState = document.getElementById('weatherStateChart').getContext('2d');
-        new Chart(ctxState, {
+        weatherStateChart = new Chart(ctxState, {
             type: 'doughnut',
             data: {
                 labels: ['晴天', '多云', '小雨'],
                 datasets: [{
                     label: '天气状态',
-                    data: [70, 20, 10],
+                    data: [0, 0, 0], // 初始值
                     backgroundColor: ['var(--primary-color)', '#34c759', '#ff3b30']
                 }]
             },
@@ -614,13 +618,13 @@
 
         // 重要警报数据图表
         const ctxAlert = document.getElementById('alertDataChart').getContext('2d');
-        new Chart(ctxAlert, {
+        alertDataChart = new Chart(ctxAlert, {
             type: 'bar',
             data: {
                 labels: ['台风预警', '暴雨预警', '寒潮预警'],
                 datasets: [{
                     label: '警报类型',
-                    data: [7, 2, 1],
+                    data: [0, 0, 0], // 初始值
                     backgroundColor: ['#ff3b30', '#ff9500', '#ffcc00']
                 }]
             },
@@ -631,26 +635,221 @@
                     legend: {
                         display: false
                     }
-
-
                 },
                 scales: {
                     y: {
-                        min: 0, // 设置y轴最小值
-                        max: 10, // 设置y轴最大值
+                        min: 0,
+                        max: 10,
                         title: {
                             display: true,
-                            text: '温度 (°C)' // y轴标题
+                            text: '数量'
                         }
                     },
-                }}
+                }
+            }
         });
-    });
+    }
+
+    // 获取所有数据
+    function fetchAllData() {
+        fetchCurrentWeather();
+        fetchPressureData();
+        fetchFutureWeather();
+        fetchWeatherState();
+        fetchAlertData();
+    }
+
+    // 获取当前天气数据
+    function fetchCurrentWeather() {
+        fetch('/api/weather/current')
+            .then(response => response.json())
+            .then(data => {
+                if (data) {
+                    document.getElementById('current-temp').innerText = data.tempMax + "°C";
+                    document.getElementById('current-humidity').innerText = data.humidity + "%";
+                    document.getElementById('current-uv').innerText = data.uvIndex;
+
+                    // 更新图表
+                    currentWeatherChart.data.datasets[0].data = [
+                        parseFloat(data.tempMax) || 0,
+                        parseFloat(data.humidity) || 0,
+                        parseFloat(data.uvIndex) || 0
+                    ];
+                    currentWeatherChart.update();
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching current weather:', error);
+                // 使用默认死数据
+                document.getElementById('current-temp').innerText = "0°C";
+                document.getElementById('current-humidity').innerText = "0%";
+                document.getElementById('current-uv').innerText = "弱";
+
+                currentWeatherChart.data.datasets[0].data = [25, 65, 3];
+                currentWeatherChart.update();
+            });
+    }
+
+    // 获取气象数据
+    function fetchPressureData() {
+        fetch('/api/weather/current') // 假设大气压、能见度等在当前天气接口中
+            .then(response => response.json())
+            .then(data => {
+                if (data) {
+                    document.getElementById('pressure').innerText = data.pressure + " hPa";
+                    document.getElementById('vis').innerText = data.vis + " km";
+                    document.getElementById('air-quality').innerText = data.airQuality || "--";
+                    document.getElementById('precip').innerText = data.precip + " mm";
+
+                    // 更新图表
+                    pressureDataChart.data.datasets[0].data = [
+                        parseFloat(data.pressure) || 0,
+                        parseFloat(data.vis) || 0,
+                        parseFloat(data.airQuality) || 0,
+                        parseFloat(data.precip) || 0
+                    ];
+                    pressureDataChart.update();
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching pressure data:', error);
+                // 使用默认死数据
+                document.getElementById('pressure').innerText = "0 hPa";
+                document.getElementById('vis').innerText = "0 km";
+                document.getElementById('air-quality').innerText = "0 (良好)";
+                document.getElementById('precip').innerText = "0 mm";
+
+                pressureDataChart.data.datasets[0].data = [1013, 110, 75, 225];
+                pressureDataChart.update();
+            });
+    }
+
+    // 获取未来天气数据
+    function fetchFutureWeather() {
+        fetch('/api/weather/future')
+            .then(response => response.json())
+            .then(data => {
+                if (data && data.length > 0) {
+                    const labels = data.map(d => d.fxDate); // 假设 fxDate 是日期字段
+                    const temperatures = data.map(d => parseFloat(d.tempMax) || 0);
+                    const weatherDescriptions = data.map(d => d.textDay || "--");
+
+                    // 更新HTML中的未来天气数据项
+                    data.forEach((d, index) => {
+                        if (index < 7) { // 确保不超过7天
+                            const dateElement = document.getElementById(`future-date-${index}`);
+                            const tempElement = document.getElementById(`future-temp-${index}`);
+                            if (dateElement && tempElement) {
+                                dateElement.innerText = d.fxDate || "--";
+                                tempElement.innerText = (d.tempMax ? d.tempMax + "°C" : "--") + ", " + (d.textDay || "--");
+                            }
+                        }
+                    });
+
+                    // 更新图表
+                    futureWeatherChart.data.labels = labels;
+                    futureWeatherChart.data.datasets[0].data = temperatures;
+                    futureWeatherChart.update();
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching future weather:', error);
+                // 使用默认死数据
+                const defaultLabels = ['x月x', 'x月x', 'x月x', 'x月x', 'x月x', 'x月x', 'x月x'];
+                const defaultTemps = [0, 0, 0, 0, 0, 0, 0];
+                const defaultDescriptions = ["晴天", "晴天", "晴天", "晴天", "晴天", "晴天", "晴天"];
+
+                for (let i = 0; i < 7; i++) {
+                    document.getElementById(`future-date-${i}`).innerText = defaultLabels[i];
+                    document.getElementById(`future-temp-${i}`).innerText = defaultTemps[i] + "°C, " + defaultDescriptions[i];
+                }
+
+                futureWeatherChart.data.labels = defaultLabels;
+                futureWeatherChart.data.datasets[0].data = defaultTemps;
+                futureWeatherChart.update();
+            });
+    }
+
+    // 获取天气状态数据
+    function fetchWeatherState() {
+        fetch('/api/weather/all') // 假设所有天气状态数据在这里
+            .then(response => response.json())
+            .then(data => {
+                if (data && data.length > 0) {
+                    // 计算各天气状态的数量
+                    const stateCounts = data.reduce((acc, curr) => {
+                        const state = curr.textDay || "未知";
+                        acc[state] = (acc[state] || 0) + 1;
+                        return acc;
+                    }, {});
+
+                    // 获取主要天气状态（假设最新的数据为当前状态）
+                    document.getElementById('current-state').innerText = data[0].textDay || "--";
+
+                    // 更新图表数据，根据实际天气状态调整
+                    weatherStateChart.data.datasets[0].data = [
+                        stateCounts['晴天'] || 0,
+                        stateCounts['多云'] || 0,
+                        stateCounts['小雨'] || 0
+                    ];
+                    weatherStateChart.update();
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching weather state:', error);
+                // 使用默认死数据
+                document.getElementById('current-state').innerText = "晴天";
+
+                weatherStateChart.data.datasets[0].data = [70, 20, 10];
+                weatherStateChart.update();
+            });
+    }
+
+    // 获取重要警报数据
+    function fetchAlertData() {
+        fetch('/api/weather/all') // 假设警报数据在这里
+            .then(response => response.json())
+            .then(data => {
+                if (data && data.length > 0) {
+                    // 计算各警报类型的数量
+                    const alertCounts = data.reduce((acc, curr) => {
+                        const alertType = curr.alertType || "未知";
+                        acc[alertType] = (acc[alertType] || 0) + 1;
+                        return acc;
+                    }, {});
+
+                    // 获取主要警报信息（假设最新的数据为当前警报）
+                    const latestAlert = data.find(d => d.alertType) || {};
+                    document.getElementById('alert-type').innerText = latestAlert.alertType || "台风预警";
+                    document.getElementById('alert-severity').innerText = latestAlert.severity || "高";
+                    document.getElementById('alert-time').innerText = latestAlert.fxDate || "2024-05-01 08:00";
+
+                    // 更新图表数据，根据实际警报类型调整
+                    alertDataChart.data.datasets[0].data = [
+                        alertCounts['台风预警'] || 0,
+                        alertCounts['暴雨预警'] || 0,
+                        alertCounts['寒潮预警'] || 0
+                    ];
+                    alertDataChart.update();
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching alert data:', error);
+                // 使用默认死数据
+                document.getElementById('alert-type').innerText = "台风预警";
+                document.getElementById('alert-severity').innerText = "高";
+                document.getElementById('alert-time').innerText = "2024-05-01 08:00";
+
+                alertDataChart.data.datasets[0].data = [7, 2, 1];
+                alertDataChart.update();
+            });
+    }
 
     // 按钮功能示例
     function refreshData() {
-        // 实现数据刷新逻辑，例如通过API获取最新数据
-        alert('刷新数据功能尚未实现。');
+        // 重新获取所有数据
+        fetchAllData();
+        alert('数据已刷新。');
     }
 
     function importData() {
