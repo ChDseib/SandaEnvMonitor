@@ -2,9 +2,11 @@ package com.sanda.sandaenvmonitor.controller;
 
 import com.sanda.sandaenvmonitor.model.Region;
 import com.sanda.sandaenvmonitor.model.User;
+import com.sanda.sandaenvmonitor.model.UserPrincipal;
 import com.sanda.sandaenvmonitor.service.RegionService;
 import com.sanda.sandaenvmonitor.service.UserSubscriptionService;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,17 +24,25 @@ public class UserSubscriptionController {
         this.regionService = regionService;
     }
 
+    private User getCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();  // 将principal转换为UserPrincipal
+        return userPrincipal.getUser();  // 获取自定义的User实体
+    }
+
     @GetMapping
-    public List<Region> getUserSubscriptions(@AuthenticationPrincipal User userDetails) {
-        Long userId = userDetails.getId();
+    public List<Region> getUserSubscriptions() {
+        User currentUser = getCurrentUser();
+        Long userId = currentUser.getId();
         return subscriptionService.getSubscriptionsByUserId(userId).stream()
                 .map(sub -> regionService.getRegionById(sub.getRegionId()))
                 .collect(Collectors.toList());
     }
 
     @PostMapping
-    public String addSubscription(@AuthenticationPrincipal User userDetails, @RequestParam Long regionId) {
-        Long userId = userDetails.getId();
+    public String addSubscription(@RequestParam Long regionId) {
+        User currentUser = getCurrentUser();
+        Long userId = currentUser.getId();
         boolean success = subscriptionService.addSubscription(userId, regionId);
         if (success) {
             return "订阅成功";

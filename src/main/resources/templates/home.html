@@ -398,6 +398,10 @@
             align-items: center;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
+        .ui-autocomplete {
+            z-index: 1000; /* 你可以根据需要调整这个值 */
+            position: absolute;
+        }
 
         .add-btn:hover {
             background-color: rgba(255, 255, 255, 0.7); /* Slightly less transparent on hover */
@@ -1075,48 +1079,57 @@
     }
     $(function() {
         // 初始化模糊搜索
-        $("#citySearch").autocomplete({
-            source: function(request, response) {
-                $.ajax({
-                    url: "/api/regions/search",
-                    data: { query: request.term },
-                    success: function(data) {
-                        response(data.map(function(region) {
-                            return {
-                                label: region.name,
-                                value: region.name,
-                                id: region.id
-                            };
-                        }));
-                    }
-                });
-            },
-            minLength: 2,
-            select: function(event, ui) {
-                $("#citySearch").data('selected-id', ui.item.id);
-            }
+        $(document).ready(function() {
+            $("#citySearch").autocomplete({
+                source: function(request, response) {
+                    $.ajax({
+                        url: "/api/regions/search",
+                        data: { query: request.term },
+                        success: function(data) {
+                            console.log(data); // 调试用
+                            response($.map(data, function(region) {
+                                return {
+                                    label: region.name,  // 显示在联想列表中的内容
+                                    value: region.name,  // 输入框显示的内容
+                                    id: region.id        // 城市的唯一 ID
+                                };
+                            }));
+                        },
+                        error: function() {
+                            alert('城市搜索失败，请稍后再试。');
+                        }
+                    });
+                },
+                minLength: 1, // 输入一个字符后即触发搜索
+                select: function(event, ui) {
+                    $("#citySearch").data('selected-id', ui.item.id);
+                    console.log("Selected city ID:", ui.item.id);  // 调试用
+                }
+            });
         });
     });
 
     // 添加订阅功能
     $("#addCityBtn").click(function() {
         const cityName = $("#citySearch").val();
-        const regionId = $("#citySearch").data('selected-id');
+        const regionId = $("#citySearch").data('selected-id'); // 获取选中的城市ID
+
         if (!cityName || !regionId) {
             alert("请选择一个有效的城市");
             return;
         }
 
+        // 发送 POST 请求，提交选中的城市 ID
         $.ajax({
             type: "POST",
             url: "/api/subscriptions",
             data: { regionId: regionId },
             success: function(response) {
-                alert(response);
-                fetchSubscriptions();
+                alert("成功订阅城市：" + cityName);
+                fetchSubscriptions(); // 刷新用户的订阅列表
             },
             error: function() {
-                alert("添加订阅失败");
+                alert("添加订阅失败，请稍后再试。");
             }
         });
     });

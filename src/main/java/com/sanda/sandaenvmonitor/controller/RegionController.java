@@ -23,7 +23,9 @@ public class RegionController {
 
     @GetMapping("/search")
     public List<Region> searchRegions(@RequestParam("query") String query) {
+        if (query == null || query.isEmpty()) {
+            throw new IllegalArgumentException("查询参数不能为空");
+        }
         return regionService.searchRegions(query);
     }
 }
-
