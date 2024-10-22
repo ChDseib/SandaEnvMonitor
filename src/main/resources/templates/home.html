@@ -255,7 +255,142 @@
             width: 100%;
             height: 100%;
         }
+        /* 侧边栏样式 */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: -250px; /* 初始隐藏在左侧 */
+            width: 250px;
+            height: 100%;
+            background-color: var(--primary-color);
+            color: white;
+            transition: left 0.3s ease;
+            z-index: 1000;
+            padding: 20px;
+            box-sizing: border-box;
+        }
 
+        .sidebar-content {
+            margin-top: 60px; /* 留出顶部按钮的空间 */
+        }
+
+        /* 侧边栏按钮样式 */
+        /* 侧边栏按钮样式 */
+        .sidebar-toggle {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1001;
+            transition: left 0.3s ease; /* 添加平滑切换动画 */
+        }
+
+        /* 右下角按钮样式 */
+        .btn {
+            background-color: var(--primary-color);
+            color: white;
+            width: 60px;
+            height: 60px;
+            border: none;
+            border-radius: 50%;
+            font-size: 1.5em;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.3s, opacity 0.3s, visibility 0.3s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn:hover {
+            background-color: var(--primary-hover-color);
+            transform: scale(1.1);
+        }
+        /* 下拉框样式 */
+        /* 下拉框样式 */
+        select {
+            width: 100%;
+            padding: 10px;
+            border: none; /* 移除边框 */
+            border-radius: 10px; /* 圆角矩形 */
+            background-color: #ffffff; /* 纯白色背景 */
+            color: var(--text-color);
+            font-size: 1em;
+            appearance: none; /* 移除默认箭头 */
+            -webkit-appearance: none; /* 移除默认箭头 */
+            -moz-appearance: none; /* 移除默认箭头 */
+            background-image: url('data:image/svg+xml;charset=US-ASCII,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 4 5"><path fill="none" stroke="%23333" stroke-width=".75" d="M2 0L0 2h4zm0 5L0 3h4z"/></svg>'); /* 自定义箭头 */
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* 添加阴影 */
+        }
+        /* Add button style */
+        .add-btn {
+            background-color: rgba(255, 255, 255, 0.5); /* Semi-transparent white */
+            color: white;
+            width: 45px; /* 75% of 60px (menu button size) */
+            height: 45px; /* 75% of 60px (menu button size) */
+            border: none;
+            border-radius: 50%;
+            font-size: 1.125em; /* 75% of 1.5em */
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.3s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-top: 20px; /* Add some space above the button */
+        }
+
+        .add-btn:hover {
+            background-color: rgba(255, 255, 255, 0.7); /* Slightly less transparent on hover */
+            transform: scale(1.1);
+        }
+
+        .add-btn:active {
+            transform: scale(0.95);
+        }
+        .header-with-button {
+            display: flex;
+            align-items: center;
+            position: relative;
+        }
+
+        .add-btn {
+            position: absolute;
+            top: -70px; /* 25px above the heading */
+            right: 5px; /* 25px to the right of the heading */
+            background-color: rgba(255, 255, 255, 0.5); /* Semi-transparent white */
+            color: white;
+            width: 45px; /* 75% of 60px (menu button size) */
+            height: 45px; /* 75% of 60px (menu button size) */
+            border: none;
+            border-radius: 50%;
+            font-size: 0.75em; /* 75% of 1.5em */
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.3s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .add-btn:hover {
+            background-color: rgba(255, 255, 255, 0.7); /* Slightly less transparent on hover */
+            transform: scale(1.1);
+        }
+
+        .add-btn:active {
+            transform: scale(0.95);
+        }
+        /* 特定选项样式 */
+        select option[value="beijing"] {
+            background-color: #ffffff; /* 北京选项背景色为白色 */
+        }
+        /* 点击效果 */
+        .btn:active {
+            transform: scale(0.95);
+        }
         /* 响应式设计 */
         @media (max-width: 1200px) {
             .container {
@@ -323,6 +458,38 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
+<div class="sidebar" id="sidebar">
+    <div class="sidebar-content">
+        <div class="header-with-button">
+            <h2>地区选择</h2>
+            <button class="add-btn" id="addButton" title="添加" aria-label="添加">
+                <!-- Add icon SVG -->
+                <svg width="18" height="18" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M24 10V38" stroke="#ffffff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M10 24H38" stroke="#ffffff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </button>
+        </div>
+        <select id="regionSelect">
+            <option value="beijing">北京-北京</option>
+            <option value="yuncheng">山西-运城</option>
+            <option value="region3">地区3</option>
+        </select>
+
+    </div>
+</div>
+<button class="sidebar-toggle btn" id="sidebarToggle" title="菜单" aria-label="菜单">
+    <!-- 菜单图标 SVG -->
+    <?xml version="1.0" encoding="UTF-8"?>
+    <svg width="24" height="24" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M4 42H44" stroke="#ffffff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+        <rect x="8" y="22" width="12" height="20" rx="2" fill="none" stroke="#ffffff" stroke-width="4" stroke-linejoin="round"/>
+        <rect x="20" y="4" width="20" height="38" rx="2" fill="none" stroke="#ffffff" stroke-width="4" stroke-linejoin="round"/>
+        <path d="M28 32.0083H32" stroke="#ffffff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M12 32.0083H16" stroke="#ffffff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M28 23.0083H32" stroke="#ffffff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M28 14.0083H32" stroke="#ffffff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg></button>
 <div class="container">
     <!-- 当前天气模块 -->
     <div class="weather-module" id="current-weather">
@@ -770,6 +937,22 @@
             });
     }
 
+    //菜单栏
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const sidebar = document.getElementById('sidebar');
+        const sidebarToggle = document.getElementById('sidebarToggle');
+
+        sidebarToggle.addEventListener('click', function () {
+            if (sidebar.style.left === '0px') {
+                sidebar.style.left = '-250px';
+                sidebarToggle.style.left = '20px'; // Reset button position
+            } else {
+                sidebar.style.left = '0px';
+                sidebarToggle.style.left = '270px'; // Move button to the right
+            }
+        });
+    });
     // 获取天气状态数据
     function fetchWeatherState() {
         fetch('/api/weather/all') // 假设所有天气状态数据在这里
