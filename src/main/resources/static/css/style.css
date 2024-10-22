@@ -132,3 +132,16 @@ body {
 .error {
     color: var(--error-color);
 }
+/* src/main/resources/static/css/style.css */
+
+.input-group input {
+    border: none; /* 删除描边 */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* 添加阴影 */
+    padding: 10px;
+    border-radius: 4px;
+    outline: none; /* 移除点击时的默认描边 */
+}
+
+.input-group input:focus {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); /* 聚焦时增加阴影 */
+}

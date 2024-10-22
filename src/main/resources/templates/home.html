@@ -10,6 +10,9 @@
     <link rel="stylesheet" th:href="@{/css/style.css}">
     <!-- 引入 Font Awesome 图标库（可选，如果不再使用，可以移除） -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-pjw1b5k5WkP/lvGQ6kHjTphPo4KZx8BvK7Z4KKn/8L5P7WHPFehrPZ3Gv8q/YymrRgrH5fEmRLYzG0a8IcYw7Q==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
     <style>
         /* 定义 CSS 变量 */
         :root {
@@ -21,7 +24,28 @@
             --label-color: #555555;
             --error-color: #f44336;
         }
+        #citySearch {
+            width: 100%;
+            padding: 10px;
+            font-size: 1em;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
 
+        #subscriptionList {
+            margin-top: 20px;
+        }
+        .subscription-item {
+            padding: 10px;
+            border: 1px solid #eee;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+        .subscription-item:hover {
+            background-color: #f0f0f0;
+        }
         /* 整体页面样式 */
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -462,7 +486,7 @@
     <div class="sidebar-content">
         <div class="header-with-button">
             <h2>地区选择</h2>
-            <button class="add-btn" id="addButton" title="添加" aria-label="添加">
+            <button class="add-btn" id="addCityBtn" title="添加" aria-label="添加">
                 <!-- Add icon SVG -->
                 <svg width="18" height="18" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M24 10V38" stroke="#ffffff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
@@ -470,11 +494,16 @@
                 </svg>
             </button>
         </div>
-        <select id="regionSelect">
-            <option value="beijing">北京-北京</option>
-            <option value="yuncheng">山西-运城</option>
-            <option value="region3">地区3</option>
-        </select>
+        <div>
+            <input type="text" id="citySearch" placeholder="搜索城市..." autocomplete="off">
+        </div>
+        <!-- 显示用户的订阅列表 -->
+        <div id="subscriptionList">
+            <h3>您的订阅城市</h3>
+            <div id="subscriptions">
+                <!-- 动态加载用户的订阅城市 -->
+            </div>
+        </div>
 
     </div>
 </div>
@@ -1044,7 +1073,103 @@
         // 实现设置界面
         alert('设置功能尚未实现。');
     }
+    $(function() {
+        // 初始化模糊搜索
+        $("#citySearch").autocomplete({
+            source: function(request, response) {
+                $.ajax({
+                    url: "/api/regions/search",
+                    data: { query: request.term },
+                    success: function(data) {
+                        response(data.map(function(region) {
+                            return {
+                                label: region.name,
+                                value: region.name,
+                                id: region.id
+                            };
+                        }));
+                    }
+                });
+            },
+            minLength: 2,
+            select: function(event, ui) {
+                $("#citySearch").data('selected-id', ui.item.id);
+            }
+        });
+    });
 
+    // 添加订阅功能
+    $("#addCityBtn").click(function() {
+        const cityName = $("#citySearch").val();
+        const regionId = $("#citySearch").data('selected-id');
+        if (!cityName || !regionId) {
+            alert("请选择一个有效的城市");
+            return;
+        }
+
+        $.ajax({
+            type: "POST",
+            url: "/api/subscriptions",
+            data: { regionId: regionId },
+            success: function(response) {
+                alert(response);
+                fetchSubscriptions();
+            },
+            error: function() {
+                alert("添加订阅失败");
+            }
+        });
+    });
+
+    // 获取用户的订阅列表
+    function fetchSubscriptions() {
+        $.ajax({
+            type: "GET",
+            url: "/api/subscriptions",
+            success: function(data) {
+                const subscriptionsDiv = $("#subscriptions");
+                subscriptionsDiv.empty();
+                data.forEach(function(region) {
+                    const cityDiv = $("<div>")
+                        .addClass("subscription-item")
+                        .text(region.name)
+                        .data("region-id", region.id)
+                        .click(function() {
+                            // 切换城市数据
+                            const selectedRegionId = $(this).data("region-id");
+                            fetchWeatherData(selectedRegionId);
+                        });
+                    subscriptionsDiv.append(cityDiv);
+                });
+            },
+            error: function() {
+                console.error("获取订阅列表失败");
+            }
+        });
+    }
+
+    // 切换城市数据
+    function fetchWeatherData(regionId) {
+        // 假设您有一个API根据regionId获取天气数据
+        // 这里您需要根据实际API调整
+        fetch(`/api/weather/current?regionId=${regionId}`)
+            .then(response => response.json())
+            .then(data => {
+                // 更新前端显示
+                document.getElementById('current-temp').innerText = data.tempMax + "°C";
+                document.getElementById('current-humidity').innerText = data.humidity + "%";
+                document.getElementById('current-uv').innerText = data.uvIndex;
+                // 继续更新其他模块...
+            })
+            .catch(error => {
+                console.error('Error fetching weather data:', error);
+            });
+    }
+
+    // 页面加载时获取订阅列表
+    $(document).ready(function() {
+        fetchSubscriptions();
+    });
     // 导航按钮动画
     const btnGroup = document.getElementById('btnGroup');
     const mainBtn = document.getElementById('mainBtn');
