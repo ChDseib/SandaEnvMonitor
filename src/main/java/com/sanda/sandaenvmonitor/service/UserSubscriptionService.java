@@ -6,6 +6,7 @@ import com.sanda.sandaenvmonitor.repository.UserSubscriptionRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserSubscriptionService {
@@ -30,6 +31,14 @@ public class UserSubscriptionService {
         subscriptionRepository.save(subscription);
         return true;
     }
-
+    public boolean deleteSubscription(Long userId, Long regionId) {
+        Optional<UserSubscription> subscriptionOptional = subscriptionRepository.findByUserIdAndRegionId(userId, regionId);
+        if (subscriptionOptional.isPresent()) {
+            subscriptionRepository.delete(subscriptionOptional.get());
+            return true;
+        } else {
+            return false; // 订阅不存在
+        }
+    }
     // 其他方法如删除订阅等（如果需要）
 }

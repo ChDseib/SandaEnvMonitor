@@ -50,4 +50,15 @@ public class UserSubscriptionController {
             return "已经订阅过该城市";
         }
     }
+    @DeleteMapping
+    public String deleteSubscription(@RequestParam Long regionId) {
+        User currentUser = getCurrentUser();
+        Long userId = currentUser.getId();
+        boolean success = subscriptionService.deleteSubscription(userId, regionId);
+        if (success) {
+            return "删除订阅成功";
+        } else {
+            return "订阅不存在";
+        }
+    }
 }

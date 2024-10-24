@@ -57,7 +57,39 @@
             justify-content: center;
             align-items: center;
         }
+        .subscription-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            /* 保留您原有的样式 */
+        }
 
+        .delete-btn {
+            background-color: rgba(255, 255, 255, 0.5); /* 半透明白色背景 */
+            color: #333; /* 文本颜色 */
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            font-size: 16px;
+            line-height: 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.3s;
+        }
+
+        .delete-btn:hover {
+            background-color: rgba(255, 255, 255, 0.7); /* 悬停时略微减少透明度 */
+            transform: scale(1.1);
+        }
+
+        .delete-btn:active {
+            transform: scale(0.95);
+        }
+
+        .delete-btn:focus {
+            outline: none;
+        }
         .container {
             width: 88vw; /* 占据视口宽度的88% */
             height: 88vh; /* 占据视口高度的88% */
@@ -929,11 +961,10 @@
         fetch('/api/weather/future')
             .then(response => response.json())
             .then(data => {
-                data.sort((a, b) => new Date(a.fxDate) - new Date(b.fxDate));
-
                 if (data && data.length > 0) {
                     const labels = data.map(d => d.fxDate); // 假设 fxDate 是日期字段
                     const temperatures = data.map(d => parseFloat(d.tempMax) || 0);
+                    const weatherDescriptions = data.map(d => d.textDay || "--");
 
                     // 更新HTML中的未来天气数据项
                     data.forEach((d, index) => {
@@ -1177,13 +1208,27 @@
                 data.forEach(function(region) {
                     const cityDiv = $("<div>")
                         .addClass("subscription-item")
+                        .data("region-id", region.id);
+
+                    const cityName = $("<span>")
                         .text(region.name)
-                        .data("region-id", region.id)
                         .click(function() {
                             // 切换城市数据
-                            const selectedRegionId = $(this).data("region-id");
+                            const selectedRegionId = $(this).parent().data("region-id");
                             fetchWeatherData(selectedRegionId);
                         });
+
+                    const deleteBtn = $("<button>")
+                        .addClass("delete-btn")
+                        .html("&times;")
+                        .click(function(event) {
+                            event.stopPropagation(); // 防止触发父级的点击事件
+                            const regionId = $(this).parent().data("region-id");
+                            deleteSubscription(regionId);
+                        });
+
+                    cityDiv.append(cityName);
+                    cityDiv.append(deleteBtn);
                     subscriptionsDiv.append(cityDiv);
                 });
             },
@@ -1192,7 +1237,19 @@
             }
         });
     }
-
+    function deleteSubscription(regionId) {
+        $.ajax({
+            type: "DELETE",
+            url: "/api/subscriptions?regionId=" + regionId,
+            success: function(response) {
+                alert("已删除订阅");
+                fetchSubscriptions(); // 刷新订阅列表
+            },
+            error: function() {
+                alert("删除订阅失败，请稍后再试。");
+            }
+        });
+    }
     // 切换城市数据
     function fetchWeatherData(regionId) {
         // 假设您有一个API根据regionId获取天气数据
