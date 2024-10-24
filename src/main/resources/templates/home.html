@@ -1133,7 +1133,38 @@
             }
         });
     });
+    function getWeather(code) {
 
+        fetch(`https://devapi.qweather.com/v7/weather/7d?location=${code}&key=8226ccf6174041f0bc6a4e9bb078bd05`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log(data);
+                const map = new Map();
+                map.set('weatherInfo', data.daily);
+                map.set('fxLink', data.fxLink);
+                const obj = Object.fromEntries(map);
+                fetch('/weather/sevenday', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+
+                    body: JSON.stringify(obj),
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+                    })
+                    .catch(error => console.error('Error sending data:', error));
+            })
+            .catch(error => console.error('Error:', error));
+    }
     // 获取用户的订阅列表
     function fetchSubscriptions() {
         $.ajax({
@@ -1165,6 +1196,7 @@
     function fetchWeatherData(regionId) {
         // 假设您有一个API根据regionId获取天气数据
         // 这里您需要根据实际API调整
+        getWeather(regionId);
         fetch(`/api/weather/current?regionId=${regionId}`)
             .then(response => response.json())
             .then(data => {

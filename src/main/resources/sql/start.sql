@@ -3384,60 +3384,88 @@ COMMIT;
 -- ----------------------------
 -- Table structure for weather_data
 -- ----------------------------
+/*
+ Navicat Premium Data Transfer
+
+ Source Server         : host
+ Source Server Type    : MySQL
+ Source Server Version : 50724
+ Source Host           : localhost:3306
+ Source Schema         : envmonitorr
+
+ Target Server Type    : MySQL
+ Target Server Version : 50724
+ File Encoding         : 65001
+
+ Date: 24/10/2024 00:07:07
+*/
+
+SET NAMES utf8mb4;
+SET FOREIGN_KEY_CHECKS = 0;
+
+-- ----------------------------
+-- Table structure for weather_data
+-- ----------------------------
 DROP TABLE IF EXISTS `weather_data`;
-CREATE TABLE `weather_data` (
-                                `id` bigint NOT NULL AUTO_INCREMENT COMMENT 'id',
-                                `city` varchar(255) DEFAULT NULL,
-                                `sign` varchar(255) DEFAULT NULL,
-                                `fx_date` varchar(255) DEFAULT NULL,
-                                `sunrise` varchar(255) DEFAULT NULL,
-                                `sunset` varchar(255) DEFAULT NULL,
-                                `moonrise` varchar(255) DEFAULT NULL,
-                                `moonset` varchar(255) DEFAULT NULL,
-                                `moon_phase` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '月相名称',
-                                `moon_phase_icon` varchar(255) DEFAULT NULL,
-                                `temp_max` varchar(255) DEFAULT NULL,
-                                `temp_min` varchar(255) DEFAULT NULL,
-                                `icon_day` varchar(255) DEFAULT NULL,
-                                `text_day` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT ' 预报白天天气状况文字描述，包括阴晴雨雪等天气状态的描述',
-                                `icon_night` varchar(255) DEFAULT NULL,
-                                `text_night` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '预报晚间天气状况文字描述，包括阴晴雨雪等天气状态的描述',
-                                `wind_dir_day` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '预报白天风向',
-                                `wind_scale_day` varchar(255) DEFAULT NULL,
-                                `wind_speed_day` varchar(255) DEFAULT NULL,
-                                `wind_dir_night` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '预报夜间当天风向',
-                                `wind_scale_night` varchar(255) DEFAULT NULL,
-                                `wind_speed_night` varchar(255) DEFAULT NULL,
-                                `humidity` varchar(255) DEFAULT NULL,
-                                `precip` varchar(255) DEFAULT NULL,
-                                `pressure` varchar(255) DEFAULT NULL,
-                                `vis` varchar(255) DEFAULT NULL,
-                                `cloud` varchar(255) DEFAULT NULL,
-                                `uv_index` varchar(255) DEFAULT NULL,
-                                `air_quality` varchar(255) DEFAULT NULL,
-                                `alert_type` varchar(255) DEFAULT NULL,
-                                `severity` varchar(255) DEFAULT NULL,
-                                PRIMARY KEY (`id`) USING BTREE
-) ENGINE=MyISAM AUTO_INCREMENT=15 DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
+CREATE TABLE `weather_data`  (
+                                 `id` varchar(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
+                                 `update_time` datetime(6) NULL DEFAULT NULL,
+                                 `fx_link` varchar(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL,
+                                 `city` varchar(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL,
+                                 `fx_date` date NULL DEFAULT NULL,
+                                 `sunrise` time(6) NULL DEFAULT NULL,
+                                 `sunset` time(6) NULL DEFAULT NULL,
+                                 `moonrise` time(6) NULL DEFAULT NULL,
+                                 `moonset` time(6) NULL DEFAULT NULL,
+                                 `moon_phase` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+                                 `moon_phase_icon` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+                                 `temp_max` int(11) NULL DEFAULT NULL,
+                                 `temp_min` int(1) NULL DEFAULT NULL,
+                                 `icon_day` varchar(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL,
+                                 `text_day` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+                                 `icon_night` varchar(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL,
+                                 `text_night` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+                                 `wind_360_day` int(11) NULL DEFAULT NULL,
+                                 `wind_dir_day` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+                                 `wind_scale_day` varchar(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL,
+                                 `wind_speed_day` int(11) NULL DEFAULT NULL,
+                                 `wind_360_night` int(11) NULL DEFAULT NULL,
+                                 `wind_dir_night` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+                                 `wind_scale_night` varchar(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL,
+                                 `wind_speed_night` int(11) NULL DEFAULT NULL,
+                                 `humidity` int(11) NULL DEFAULT NULL,
+                                 `precip` decimal(38, 2) NULL DEFAULT NULL,
+                                 `pressure` int(11) NULL DEFAULT NULL,
+                                 `visibility` int(11) NULL DEFAULT NULL,
+                                 `cloud` int(11) NULL DEFAULT NULL,
+                                 `uv_index` int(11) NULL DEFAULT NULL,
+                                 `air_quality` varchar(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL,
+                                 `alert_type` varchar(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL,
+                                 `severity` varchar(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL,
+                                 `sign` varchar(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL,
+                                 `vis` varchar(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL,
+                                 PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of weather_data
 -- ----------------------------
-BEGIN;
-INSERT INTO `weather_data` (`id`, `city`, `sign`, `fx_date`, `sunrise`, `sunset`, `moonrise`, `moonset`, `moon_phase`, `moon_phase_icon`, `temp_max`, `temp_min`, `icon_day`, `text_day`, `icon_night`, `text_night`, `wind_dir_day`, `wind_scale_day`, `wind_speed_day`, `wind_dir_night`, `wind_scale_night`, `wind_speed_night`, `humidity`, `precip`, `pressure`, `vis`, `cloud`, `uv_index`, `air_quality`, `alert_type`, `severity`) VALUES (1, 'beijing', '1', '2024-10-21', '06:32', '17:28', '19:51', '11:02', '亏凸月', '805', '14', '6', '100', '晴', '305', '小雨', '西南风', '1-3', '3', '北风', '1-3', '16', '41', '0.0', '1018', '25', '25', '4', NULL, NULL, NULL);
-INSERT INTO `weather_data` (`id`, `city`, `sign`, `fx_date`, `sunrise`, `sunset`, `moonrise`, `moonset`, `moon_phase`, `moon_phase_icon`, `temp_max`, `temp_min`, `icon_day`, `text_day`, `icon_night`, `text_night`, `wind_dir_day`, `wind_scale_day`, `wind_speed_day`, `wind_dir_night`, `wind_scale_night`, `wind_speed_night`, `humidity`, `precip`, `pressure`, `vis`, `cloud`, `uv_index`, `air_quality`, `alert_type`, `severity`) VALUES (2, 'beijing', '1', '2024-10-22', '06:33', '17:26', '20:49', '12:07', '亏凸月', '805', '16', '3', '305', '小雨', '150', '晴', '北风', '1-3', '3', '西风', '1-3', '3', '41', '1.0', '1015', '25', '55', '2', NULL, NULL, NULL);
-INSERT INTO `weather_data` (`id`, `city`, `sign`, `fx_date`, `sunrise`, `sunset`, `moonrise`, `moonset`, `moon_phase`, `moon_phase_icon`, `temp_max`, `temp_min`, `icon_day`, `text_day`, `icon_night`, `text_night`, `wind_dir_day`, `wind_scale_day`, `wind_speed_day`, `wind_dir_night`, `wind_scale_night`, `wind_speed_night`, `humidity`, `precip`, `pressure`, `vis`, `cloud`, `uv_index`, `air_quality`, `alert_type`, `severity`) VALUES (3, 'beijing', '1', '2024-10-23', '06:34', '17:25', '21:54', '13:03', '亏凸月', '805', '18', '5', '100', '晴', '150', '晴', '西南风', '1-3', '3', '北风', '1-3', '3', '43', '0.0', '1013', '25', '25', '3', NULL, NULL, NULL);
-INSERT INTO `weather_data` (`id`, `city`, `sign`, `fx_date`, `sunrise`, `sunset`, `moonrise`, `moonset`, `moon_phase`, `moon_phase_icon`, `temp_max`, `temp_min`, `icon_day`, `text_day`, `icon_night`, `text_night`, `wind_dir_day`, `wind_scale_day`, `wind_speed_day`, `wind_dir_night`, `wind_scale_night`, `wind_speed_night`, `humidity`, `precip`, `pressure`, `vis`, `cloud`, `uv_index`, `air_quality`, `alert_type`, `severity`) VALUES (4, 'beijing', '1', '2024-10-24', '06:35', '17:24', '23:02', '13:46', '下弦月', '806', '19', '7', '100', '晴', '150', '晴', '北风', '1-3', '3', '东北风', '1-3', '3', '52', '0.0', '1016', '25', '25', '3', NULL, NULL, NULL);
-INSERT INTO `weather_data` (`id`, `city`, `sign`, `fx_date`, `sunrise`, `sunset`, `moonrise`, `moonset`, `moon_phase`, `moon_phase_icon`, `temp_max`, `temp_min`, `icon_day`, `text_day`, `icon_night`, `text_night`, `wind_dir_day`, `wind_scale_day`, `wind_speed_day`, `wind_dir_night`, `wind_scale_night`, `wind_speed_night`, `humidity`, `precip`, `pressure`, `vis`, `cloud`, `uv_index`, `air_quality`, `alert_type`, `severity`) VALUES (5, 'beijing', '1', '2024-10-25', '06:36', '17:22', NULL, '14:20', '残月', '807', '19', '7', '100', '晴', '151', '多云', '南风', '1-3', '3', '北风', '1-3', '3', '61', '0.0', '1014', '24', '5', '3', NULL, NULL, NULL);
-INSERT INTO `weather_data` (`id`, `city`, `sign`, `fx_date`, `sunrise`, `sunset`, `moonrise`, `moonset`, `moon_phase`, `moon_phase_icon`, `temp_max`, `temp_min`, `icon_day`, `text_day`, `icon_night`, `text_night`, `wind_dir_day`, `wind_scale_day`, `wind_speed_day`, `wind_dir_night`, `wind_scale_night`, `wind_speed_night`, `humidity`, `precip`, `pressure`, `vis`, `cloud`, `uv_index`, `air_quality`, `alert_type`, `severity`) VALUES (6, 'beijing', '1', '2024-10-26', '06:37', '17:21', '00:10', '14:48', '残月', '807', '18', '8', '101', '多云', '151', '多云', '西北风', '1-3', '3', '北风', '1-3', '3', '55', '0.0', '1021', '25', '25', '2', NULL, NULL, NULL);
-INSERT INTO `weather_data` (`id`, `city`, `sign`, `fx_date`, `sunrise`, `sunset`, `moonrise`, `moonset`, `moon_phase`, `moon_phase_icon`, `temp_max`, `temp_min`, `icon_day`, `text_day`, `icon_night`, `text_night`, `wind_dir_day`, `wind_scale_day`, `wind_speed_day`, `wind_dir_night`, `wind_scale_night`, `wind_speed_night`, `humidity`, `precip`, `pressure`, `vis`, `cloud`, `uv_index`, `air_quality`, `alert_type`, `severity`) VALUES (7, 'beijing', '1', '2024-10-27', '06:38', '17:20', '01:15', '15:10', '残月', '807', '17', '6', '101', '多云', '150', '晴', '东北风', '1-3', '3', '东南风', '1-3', '3', '54', '0.0', '1015', '25', '25', '2', NULL, NULL, NULL);
-INSERT INTO `weather_data` (`id`, `city`, `sign`, `fx_date`, `sunrise`, `sunset`, `moonrise`, `moonset`, `moon_phase`, `moon_phase_icon`, `temp_max`, `temp_min`, `icon_day`, `text_day`, `icon_night`, `text_night`, `wind_dir_day`, `wind_scale_day`, `wind_speed_day`, `wind_dir_night`, `wind_scale_night`, `wind_speed_night`, `humidity`, `precip`, `pressure`, `vis`, `cloud`, `uv_index`, `air_quality`, `alert_type`, `severity`) VALUES (8, 'yuncheng', '1', '2024-10-22', '06:48', '17:54', '21:31', '12:10', '亏凸月', '805', '16', '5', '100', '晴', '150', '晴', '西北风', '1-3', '16', '东风', '1-3', '3', '50', '0.0', '963', '25', '25', '4', NULL, NULL, NULL);
-INSERT INTO `weather_data` (`id`, `city`, `sign`, `fx_date`, `sunrise`, `sunset`, `moonrise`, `moonset`, `moon_phase`, `moon_phase_icon`, `temp_max`, `temp_min`, `icon_day`, `text_day`, `icon_night`, `text_night`, `wind_dir_day`, `wind_scale_day`, `wind_speed_day`, `wind_dir_night`, `wind_scale_night`, `wind_speed_night`, `humidity`, `precip`, `pressure`, `vis`, `cloud`, `uv_index`, `air_quality`, `alert_type`, `severity`) VALUES (9, 'yuncheng', '1', '2024-10-23', '06:49', '17:53', '22:36', '13:06', '亏凸月', '805', '21', '8', '100', '晴', '150', '晴', '东风', '1-3', '3', '东风', '1-3', '3', '55', '0.0', '959', '25', '25', '4', NULL, NULL, NULL);
-INSERT INTO `weather_data` (`id`, `city`, `sign`, `fx_date`, `sunrise`, `sunset`, `moonrise`, `moonset`, `moon_phase`, `moon_phase_icon`, `temp_max`, `temp_min`, `icon_day`, `text_day`, `icon_night`, `text_night`, `wind_dir_day`, `wind_scale_day`, `wind_speed_day`, `wind_dir_night`, `wind_scale_night`, `wind_speed_night`, `humidity`, `precip`, `pressure`, `vis`, `cloud`, `uv_index`, `air_quality`, `alert_type`, `severity`) VALUES (10, 'yuncheng', '1', '2024-10-24', '06:50', '17:51', '23:41', '13:52', '下弦月', '806', '24', '9', '104', '阴', '151', '多云', '东风', '1-3', '3', '东南风', '1-3', '3', '56', '0.0', '959', '25', '25', '4', NULL, NULL, NULL);
-INSERT INTO `weather_data` (`id`, `city`, `sign`, `fx_date`, `sunrise`, `sunset`, `moonrise`, `moonset`, `moon_phase`, `moon_phase_icon`, `temp_max`, `temp_min`, `icon_day`, `text_day`, `icon_night`, `text_night`, `wind_dir_day`, `wind_scale_day`, `wind_speed_day`, `wind_dir_night`, `wind_scale_night`, `wind_speed_night`, `humidity`, `precip`, `pressure`, `vis`, `cloud`, `uv_index`, `air_quality`, `alert_type`, `severity`) VALUES (11, 'yuncheng', '1', '2024-10-25', '06:51', '17:50', '', '14:29', '残月', '807', '23', '9', '101', '多云', '151', '多云', '东南风', '1-3', '3', '南风', '1-3', '3', '57', '0.0', '962', '25', '25', '4', NULL, NULL, NULL);
-INSERT INTO `weather_data` (`id`, `city`, `sign`, `fx_date`, `sunrise`, `sunset`, `moonrise`, `moonset`, `moon_phase`, `moon_phase_icon`, `temp_max`, `temp_min`, `icon_day`, `text_day`, `icon_night`, `text_night`, `wind_dir_day`, `wind_scale_day`, `wind_speed_day`, `wind_dir_night`, `wind_scale_night`, `wind_speed_night`, `humidity`, `precip`, `pressure`, `vis`, `cloud`, `uv_index`, `air_quality`, `alert_type`, `severity`) VALUES (12, 'yuncheng', '1', '2024-10-26', '06:52', '17:49', '00:45', '15:00', '残月', '807', '21', '10', '100', '晴', '150', '晴', '西风', '1-3', '3', '西风', '1-3', '3', '56', '0.0', '963', '25', '25', '2', NULL, NULL, NULL);
-INSERT INTO `weather_data` (`id`, `city`, `sign`, `fx_date`, `sunrise`, `sunset`, `moonrise`, `moonset`, `moon_phase`, `moon_phase_icon`, `temp_max`, `temp_min`, `icon_day`, `text_day`, `icon_night`, `text_night`, `wind_dir_day`, `wind_scale_day`, `wind_speed_day`, `wind_dir_night`, `wind_scale_night`, `wind_speed_night`, `humidity`, `precip`, `pressure`, `vis`, `cloud`, `uv_index`, `air_quality`, `alert_type`, `severity`) VALUES (13, 'yuncheng', '1', '2024-10-27', '06:53', '17:48', '01:46', '15:26', '残月', '807', '18', '11', '100', '晴', '151', '多云', '西风', '1-3', '3', '东北风', '1-3', '3', '89', '0.0', '961', '23', '25', '4', NULL, NULL, NULL);
-INSERT INTO `weather_data` (`id`, `city`, `sign`, `fx_date`, `sunrise`, `sunset`, `moonrise`, `moonset`, `moon_phase`, `moon_phase_icon`, `temp_max`, `temp_min`, `icon_day`, `text_day`, `icon_night`, `text_night`, `wind_dir_day`, `wind_scale_day`, `wind_speed_day`, `wind_dir_night`, `wind_scale_night`, `wind_speed_night`, `humidity`, `precip`, `pressure`, `vis`, `cloud`, `uv_index`, `air_quality`, `alert_type`, `severity`) VALUES (14, 'yuncheng', '1', '2024-10-28', '06:54', '17:47', '02:45', '15:50', '残月', '807', '19', '10', '101', '多云', '150', '晴', '东风', '1-3', '3', '东风', '1-3', '3', '78', '0.0', '958', '25', '25', '3', NULL, NULL, NULL);
-COMMIT;
+INSERT INTO `weather_data` VALUES ('10102060020241024', '2024-10-23 16:06:28.935537', 'https://www.qweather.com/en/weather/pudong-101020600.html', '101020600', '2024-10-24', '06:04:00.000000', '17:14:00.000000', '23:06:00.000000', '12:58:00.000000', '下弦月', '806', 21, 17, '100', '晴', '104', '阴', 45, '东北风', '1-3', 16, 45, '东北风', '1-3', 16, 67, 0.00, 1019, NULL, 25, 4, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `weather_data` VALUES ('10102060020241025', '2024-10-23 16:06:28.965545', 'https://www.qweather.com/en/weather/pudong-101020600.html', '101020600', '2024-10-25', '06:04:00.000000', '17:13:00.000000', NULL, '13:36:00.000000', '残月', '807', 24, 20, '104', '阴', '306', '中雨', 45, '东北风', '1-3', 16, 45, '东北风', '1-3', 16, 86, 0.00, 1017, NULL, 25, 4, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `weather_data` VALUES ('10102060020241026', '2024-10-23 16:06:28.976547', 'https://www.qweather.com/en/weather/pudong-101020600.html', '101020600', '2024-10-26', '06:05:00.000000', '17:12:00.000000', '00:09:00.000000', '14:10:00.000000', '残月', '807', 24, 20, '305', '小雨', '306', '中雨', 0, '北风', '1-3', 3, 0, '北风', '1-3', 3, 92, 5.10, 1014, NULL, 80, 1, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `weather_data` VALUES ('10102060020241027', '2024-10-23 16:06:28.981549', 'https://www.qweather.com/en/weather/pudong-101020600.html', '101020600', '2024-10-27', '06:06:00.000000', '17:11:00.000000', '01:08:00.000000', '14:39:00.000000', '残月', '807', 22, 18, '305', '小雨', '305', '小雨', 45, '东北风', '1-3', 16, 0, '北风', '1-3', 16, 71, 1.00, 1016, NULL, 55, 3, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `weather_data` VALUES ('10102060020241028', '2024-10-23 16:06:28.986550', 'https://www.qweather.com/en/weather/pudong-101020600.html', '101020600', '2024-10-28', '06:07:00.000000', '17:10:00.000000', '02:04:00.000000', '15:04:00.000000', '残月', '807', 20, 16, '305', '小雨', '151', '多云', 0, '北风', '1-3', 16, 0, '北风', '1-3', 3, 69, 1.00, 1017, NULL, 55, 1, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `weather_data` VALUES ('10102060020241029', '2024-10-23 16:06:28.992552', 'https://www.qweather.com/en/weather/pudong-101020600.html', '101020600', '2024-10-29', '06:08:00.000000', '17:09:00.000000', '02:58:00.000000', '15:28:00.000000', '残月', '807', 20, 13, '100', '晴', '151', '多云', 0, '北风', '1-3', 16, 0, '北风', '1-3', 3, 74, 0.00, 1017, NULL, 25, 4, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `weather_data` VALUES ('10102060020241030', '2024-10-23 16:06:28.997553', 'https://www.qweather.com/en/weather/pudong-101020600.html', '101020600', '2024-10-30', '06:08:00.000000', '17:08:00.000000', '03:52:00.000000', '15:52:00.000000', '残月', '807', 20, 15, '100', '晴', '151', '多云', 0, '北风', '1-3', 16, 45, '东北风', '1-3', 3, 69, 0.00, 1019, NULL, 25, 2, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `weather_data` VALUES ('10119010120241024', '2024-10-23 16:06:56.171962', 'https://www.qweather.com/en/weather/nanjing-101190101.html', '101190101', '2024-10-24', '06:16:00.000000', '17:24:00.000000', '23:16:00.000000', '13:11:00.000000', '下弦月', '806', 20, 12, '100', '晴', '151', '多云', 90, '东风', '1-3', 16, 45, '东北风', '1-3', 16, 81, 0.00, 1019, NULL, 25, 4, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `weather_data` VALUES ('10119010120241025', '2024-10-23 16:06:56.190279', 'https://www.qweather.com/en/weather/nanjing-101190101.html', '101190101', '2024-10-25', '06:16:00.000000', '17:23:00.000000', NULL, '13:50:00.000000', '残月', '807', 23, 15, '101', '多云', '305', '小雨', 90, '东风', '3-4', 24, 45, '东北风', '3-4', 24, 90, 0.00, 1017, NULL, 25, 3, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `weather_data` VALUES ('10119010120241026', '2024-10-23 16:06:56.195280', 'https://www.qweather.com/en/weather/nanjing-101190101.html', '101190101', '2024-10-26', '06:17:00.000000', '17:22:00.000000', '00:19:00.000000', '14:22:00.000000', '残月', '807', 21, 17, '305', '小雨', '305', '小雨', 0, '北风', '4-5', 34, 0, '北风', '3-4', 24, 88, 1.80, 1015, NULL, 60, 1, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `weather_data` VALUES ('10119010120241027', '2024-10-23 16:06:56.200280', 'https://www.qweather.com/en/weather/nanjing-101190101.html', '101190101', '2024-10-27', '06:18:00.000000', '17:21:00.000000', '01:18:00.000000', '14:51:00.000000', '残月', '807', 18, 14, '305', '小雨', '306', '中雨', 0, '北风', '3-4', 24, 0, '北风', '1-3', 16, 86, 5.10, 1016, NULL, 80, 1, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `weather_data` VALUES ('10119010120241028', '2024-10-23 16:06:56.204282', 'https://www.qweather.com/en/weather/nanjing-101190101.html', '101190101', '2024-10-28', '06:19:00.000000', '17:20:00.000000', '02:15:00.000000', '15:16:00.000000', '残月', '807', 17, 11, '101', '多云', '151', '多云', 0, '北风', '1-3', 16, 0, '北风', '1-3', 3, 71, 0.00, 1016, NULL, 25, 1, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `weather_data` VALUES ('10119010120241029', '2024-10-23 16:06:56.208283', 'https://www.qweather.com/en/weather/nanjing-101190101.html', '101190101', '2024-10-29', '06:20:00.000000', '17:19:00.000000', '03:10:00.000000', '15:40:00.000000', '残月', '807', 19, 10, '100', '晴', '150', '晴', 0, '北风', '1-3', 3, 0, '北风', '1-3', 3, 71, 0.00, 1017, NULL, 25, 4, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `weather_data` VALUES ('10119010120241030', '2024-10-23 16:06:56.212284', 'https://www.qweather.com/en/weather/nanjing-101190101.html', '101190101', '2024-10-30', '06:21:00.000000', '17:18:00.000000', '04:04:00.000000', '16:03:00.000000', '残月', '807', 19, 11, '100', '晴', '150', '晴', 0, '北风', '1-3', 3, 45, '东北风', '1-3', 3, 75, 0.00, 1018, NULL, 25, 4, NULL, NULL, NULL, NULL, NULL);
 
 SET FOREIGN_KEY_CHECKS = 1;
+
+
+

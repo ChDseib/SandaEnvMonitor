@@ -3,83 +3,138 @@
 package com.sanda.sandaenvmonitor.model;
 
 import jakarta.persistence.*;
-
+import jakarta.persistence.*;
+import lombok.Data;
+import java.io.Serializable;
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 
 @Entity
 @Table(name = "weather_data")
-public class WeatherData {
+public class WeatherData implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
+    private String id;
+    @Column(name = "city")
     private String city;
-    private String sign;
-    private String fxDate;
-    private String sunrise;
-    private String sunset;
-    private String moonrise;
-    private String moonset;
+
+    @Column(name = "update_time")
+    private LocalDateTime updateTime;
+
+    @Column(name = "fx_link")
+    private String fxLink;
+
+    @Column(name = "fx_date")
+    private LocalDate fxDate;
+
+    @Column(name = "sunrise")
+    private LocalTime sunrise;
+
+    @Column(name = "sunset")
+    private LocalTime sunset;
+
+    @Column(name = "moonrise")
+    private LocalTime moonrise;
+
+    @Column(name = "moonset")
+    private LocalTime moonset;
+
+    @Column(name = "moon_phase")
     private String moonPhase;
+
+    @Column(name = "moon_phase_icon")
     private String moonPhaseIcon;
-    private String tempMax;
-    private String tempMin;
+
+    @Column(name = "temp_max")
+    private Integer tempMax;
+
+    @Column(name = "temp_min")
+    private Integer tempMin;
+
+    @Column(name = "icon_day")
     private String iconDay;
+
+    @Column(name = "text_day")
     private String textDay;
+
+    @Column(name = "icon_night")
     private String iconNight;
+
+    @Column(name = "text_night")
     private String textNight;
+
+    @Column(name = "wind_360_day")
+    private Integer wind360Day;
+
+    @Column(name = "wind_dir_day")
     private String windDirDay;
+
+    @Column(name = "wind_scale_day")
     private String windScaleDay;
-    private String windSpeedDay;
+
+    @Column(name = "wind_speed_day")
+    private Integer windSpeedDay;
+
+    @Column(name = "wind_360_night")
+    private Integer wind360Night;
+
+    @Column(name = "wind_dir_night")
     private String windDirNight;
+
+    @Column(name = "wind_scale_night")
     private String windScaleNight;
-    private String windSpeedNight;
-    private String humidity;
-    private String precip;
-    private String pressure;
-    private String vis;
-    private String cloud;
-    private String uvIndex;
-    private String airQuality;
-    private String alertType;
-    private String severity;
 
-    public String getAirQuality() {
-        return airQuality;
-    }
+    @Column(name = "wind_speed_night")
+    private Integer windSpeedNight;
 
-    public void setAirQuality(String airQuality) {
-        this.airQuality = airQuality;
-    }
+    @Column(name = "humidity")
+    private Integer humidity;
 
-    public String getAlertType() {
-        return alertType;
-    }
+    @Column(name = "precip")
+    private BigDecimal precip;
 
-    public void setAlertType(String alertType) {
-        this.alertType = alertType;
-    }
+    @Column(name = "pressure")
+    private Integer pressure;
 
-    public String getSeverity() {
-        return severity;
-    }
+    @Column(name = "visibility")
+    private Integer visibility;
 
-    public void setSeverity(String severity) {
-        this.severity = severity;
-    }
+    @Column(name = "cloud")
+    private Integer cloud;
 
-    // 以及对应的 getter 和 setter
+    @Column(name = "uv_index")
+    private Integer uvIndex;
+
     // Getters and Setters
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
+
+    public LocalDateTime getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(LocalDateTime updateTime) {
+        this.updateTime = updateTime;
+    }
+
+    public String getFxLink() {
+        return fxLink;
+    }
+
+    public void setFxLink(String fxLink) {
+        this.fxLink = fxLink;
+    }
     public String getCity() {
         return city;
     }
@@ -88,51 +143,45 @@ public class WeatherData {
         this.city = city;
     }
 
-    public String getSign() {
-        return sign;
-    }
-
-    public void setSign(String sign) {
-        this.sign = sign;
-    }
-
-    public String getFxDate() {
+    public LocalDate getFxDate() {
         return fxDate;
     }
 
-    public void setFxDate(String fxDate) {
+    public void setFxDate(LocalDate fxDate) {
         this.fxDate = fxDate;
     }
 
-    public String getSunrise() {
+    public LocalTime getSunrise() {
         return sunrise;
     }
 
-    public void setSunrise(String sunrise) {
+    public void setSunrise(LocalTime sunrise) {
         this.sunrise = sunrise;
     }
 
-    public String getSunset() {
+
+
+    public LocalTime getSunset() {
         return sunset;
     }
 
-    public void setSunset(String sunset) {
+    public void setSunset(LocalTime sunset) {
         this.sunset = sunset;
     }
 
-    public String getMoonrise() {
+    public LocalTime getMoonrise() {
         return moonrise;
     }
 
-    public void setMoonrise(String moonrise) {
+    public void setMoonrise(LocalTime moonrise) {
         this.moonrise = moonrise;
     }
 
-    public String getMoonset() {
+    public LocalTime getMoonset() {
         return moonset;
     }
 
-    public void setMoonset(String moonset) {
+    public void setMoonset(LocalTime moonset) {
         this.moonset = moonset;
     }
 
@@ -152,19 +201,19 @@ public class WeatherData {
         this.moonPhaseIcon = moonPhaseIcon;
     }
 
-    public String getTempMax() {
+    public Integer getTempMax() {
         return tempMax;
     }
 
-    public void setTempMax(String tempMax) {
+    public void setTempMax(Integer tempMax) {
         this.tempMax = tempMax;
     }
 
-    public String getTempMin() {
+    public Integer getTempMin() {
         return tempMin;
     }
 
-    public void setTempMin(String tempMin) {
+    public void setTempMin(Integer tempMin) {
         this.tempMin = tempMin;
     }
 
@@ -200,6 +249,14 @@ public class WeatherData {
         this.textNight = textNight;
     }
 
+    public Integer getWind360Day() {
+        return wind360Day;
+    }
+
+    public void setWind360Day(Integer wind360Day) {
+        this.wind360Day = wind360Day;
+    }
+
     public String getWindDirDay() {
         return windDirDay;
     }
@@ -216,12 +273,20 @@ public class WeatherData {
         this.windScaleDay = windScaleDay;
     }
 
-    public String getWindSpeedDay() {
+    public Integer getWindSpeedDay() {
         return windSpeedDay;
     }
 
-    public void setWindSpeedDay(String windSpeedDay) {
+    public void setWindSpeedDay(Integer windSpeedDay) {
         this.windSpeedDay = windSpeedDay;
+    }
+
+    public Integer getWind360Night() {
+        return wind360Night;
+    }
+
+    public void setWind360Night(Integer wind360Night) {
+        this.wind360Night = wind360Night;
     }
 
     public String getWindDirNight() {
@@ -240,61 +305,59 @@ public class WeatherData {
         this.windScaleNight = windScaleNight;
     }
 
-    public String getWindSpeedNight() {
+    public Integer getWindSpeedNight() {
         return windSpeedNight;
     }
 
-    public void setWindSpeedNight(String windSpeedNight) {
+    public void setWindSpeedNight(Integer windSpeedNight) {
         this.windSpeedNight = windSpeedNight;
     }
 
-    public String getHumidity() {
+    public Integer getHumidity() {
         return humidity;
     }
 
-    public void setHumidity(String humidity) {
+    public void setHumidity(Integer humidity) {
         this.humidity = humidity;
     }
 
-    public String getPrecip() {
+    public BigDecimal getPrecip() {
         return precip;
     }
 
-    public void setPrecip(String precip) {
+    public void setPrecip(BigDecimal precip) {
         this.precip = precip;
     }
 
-    public String getPressure() {
+    public Integer getPressure() {
         return pressure;
     }
 
-    public void setPressure(String pressure) {
+    public void setPressure(Integer pressure) {
         this.pressure = pressure;
     }
 
-    public String getVis() {
-        return vis;
+    public Integer getVisibility() {
+        return visibility;
     }
 
-    public void setVis(String vis) {
-        this.vis = vis;
+    public void setVisibility(Integer visibility) {
+        this.visibility = visibility;
     }
 
-    public String getCloud() {
+    public Integer getCloud() {
         return cloud;
     }
 
-    public void setCloud(String cloud) {
+    public void setCloud(Integer cloud) {
         this.cloud = cloud;
     }
 
-    public String getUvIndex() {
+    public Integer getUvIndex() {
         return uvIndex;
     }
 
-    public void setUvIndex(String uvIndex) {
+    public void setUvIndex(Integer uvIndex) {
         this.uvIndex = uvIndex;
     }
-
-
 }
