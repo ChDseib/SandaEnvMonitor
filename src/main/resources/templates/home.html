@@ -982,6 +982,7 @@
         fetch('/api/weather/future')
             .then(response => response.json())
             .then(data => {
+                data.sort((a, b) => new Date(a.fxDate) - new Date(b.fxDate));
                 if (data && data.length > 0) {
                     const labels = data.map(d => d.fxDate); // 假设 fxDate 是日期字段
                     const temperatures = data.map(d => parseFloat(d.tempMax) || 0);

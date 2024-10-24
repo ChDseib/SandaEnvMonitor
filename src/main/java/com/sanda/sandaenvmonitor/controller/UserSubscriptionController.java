@@ -4,7 +4,7 @@ import com.sanda.sandaenvmonitor.model.Region;
 import com.sanda.sandaenvmonitor.model.User;
 import com.sanda.sandaenvmonitor.model.UserPrincipal;
 import com.sanda.sandaenvmonitor.service.RegionService;
-import com.sanda.sandaenvmonitor.service.UserService;
+import com.sanda.sandaenvmonitor.service.UserServiceIn;
 import com.sanda.sandaenvmonitor.service.UserSubscriptionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,12 +23,12 @@ public class UserSubscriptionController {
 
     private final UserSubscriptionService subscriptionService;
     private final RegionService regionService;
-    private final UserService userService;
+    private final UserServiceIn userServiceIn;
 
-    public UserSubscriptionController(UserSubscriptionService subscriptionService, RegionService regionService, UserService userService) {
+    public UserSubscriptionController(UserSubscriptionService subscriptionService, RegionService regionService, UserServiceIn userServiceIn) {
         this.subscriptionService = subscriptionService;
         this.regionService = regionService;
-        this.userService = userService;
+        this.userServiceIn = userServiceIn;
     }
 
     private User getCurrentUser() {
@@ -76,7 +76,7 @@ public class UserSubscriptionController {
     @PostMapping("/default")
     public ResponseEntity<String> setDefaultCity(@RequestParam Long regionId) {
         User currentUser = getCurrentUser();
-        boolean success = userService.setDefaultCity(currentUser.getId(), regionId);
+        boolean success = userServiceIn.setDefaultCity(currentUser.getId(), regionId);
         if (success) {
             return ResponseEntity.ok("默认城市设置成功");
         } else {
