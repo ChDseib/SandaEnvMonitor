@@ -274,7 +274,28 @@
             visibility: hidden;
             transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s;
         }
+        .subscription-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border: 1px solid #eee;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
 
+        .subscription-item:hover {
+            background-color: #f0f0f0;
+        }
+
+        .default-city {
+            background-color: rgba(255, 255, 255, 0.5); /* 半透明白色背景 */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);   /* 添加阴影 */
+            transform: scale(1.05);                      /* 稍微增大尺寸 */
+            transition: all 0.3s ease;
+        }
         /* 主按钮激活时显示子按钮 */
         .btn-group.active .btn-child {
             opacity: 1;
@@ -1205,24 +1226,34 @@
             success: function(data) {
                 const subscriptionsDiv = $("#subscriptions");
                 subscriptionsDiv.empty();
-                data.forEach(function(region) {
+                const defaultCityId = data.defaultCityId ? data.defaultCityId.toString() : null;
+                const subscriptions = data.subscriptions;
+                subscriptions.forEach(function(region) {
                     const cityDiv = $("<div>")
                         .addClass("subscription-item")
-                        .data("region-id", region.id);
+                        .data("region-id", region.id)
+                        .click(function() {
+                            const selectedRegionId = $(this).data("region-id");
+                            fetchWeatherData(selectedRegionId);
+                            setDefaultCity(selectedRegionId);
+
+                            // 更新UI
+                            $(".subscription-item").removeClass("default-city");
+                            $(this).addClass("default-city");
+                        });
+
+                    if (region.id.toString() === defaultCityId) {
+                        cityDiv.addClass("default-city"); // 添加样式
+                    }
 
                     const cityName = $("<span>")
-                        .text(region.name)
-                        .click(function() {
-                            // 切换城市数据
-                            const selectedRegionId = $(this).parent().data("region-id");
-                            fetchWeatherData(selectedRegionId);
-                        });
+                        .text(region.name);
 
                     const deleteBtn = $("<button>")
                         .addClass("delete-btn")
                         .html("&times;")
                         .click(function(event) {
-                            event.stopPropagation(); // 防止触发父级的点击事件
+                            event.stopPropagation();
                             const regionId = $(this).parent().data("region-id");
                             deleteSubscription(regionId);
                         });
@@ -1237,6 +1268,47 @@
             }
         });
     }
+    function setDefaultCity(regionId) {
+        console.log("Setting default city with regionId:", regionId); // 添加日志
+        $.ajax({
+            type: "POST",
+            url: "/api/subscriptions/default",
+            data: { regionId: regionId },
+            success: function(response) {
+                console.log("默认城市已更新");
+            },
+            error: function() {
+                console.error("设置默认城市失败");
+            }
+        });
+    }    $(document).ready(function() {
+        fetchSubscriptions();
+        fetchDefaultCityWeather();
+    });
+
+    function fetchDefaultCityWeather() {
+        $.ajax({
+            type: "GET",
+            url: "/api/subscriptions",
+            success: function(data) {
+                const defaultCityId = data.defaultCityId;
+                if (defaultCityId) {
+                    fetchWeatherData(defaultCityId);
+                } else if (data.subscriptions.length > 0) {
+                    // 如果没有默认城市，使用第一个订阅城市
+                    const firstCityId = data.subscriptions[0].id;
+                    fetchWeatherData(firstCityId);
+                }
+            },
+            error: function() {
+                console.error("无法获取默认城市天气数据");
+            }
+        });
+    }
+    function fetchWeatherData(regionId) {
+        // 调用您的 getWeather 函数或其他方式获取天气数据
+        getWeather(regionId);
+    }
     function deleteSubscription(regionId) {
         $.ajax({
             type: "DELETE",
@@ -1250,6 +1322,19 @@
             }
         });
     }
+    const cityDiv = $("<div>")
+        .addClass("subscription-item")
+        .data("region-id", region.id)
+        .click(function() {
+            const selectedRegionId = $(this).data("region-id");
+            console.log("Clicked regionId:", selectedRegionId); // 添加日志
+            fetchWeatherData(selectedRegionId);
+            setDefaultCity(selectedRegionId);
+
+            // 更新UI
+            $(".subscription-item").removeClass("default-city");
+            $(this).addClass("default-city");
+        });
     // 切换城市数据
     function fetchWeatherData(regionId) {
         // 假设您有一个API根据regionId获取天气数据

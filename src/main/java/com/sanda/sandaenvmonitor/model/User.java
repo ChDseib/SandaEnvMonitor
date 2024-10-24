@@ -28,7 +28,17 @@ public class User {
     @Column(nullable = false, length = 20)
     private String phoneNumber;
 
+    @Column(name = "default_city")
+    private Long defaultCity;
 
+    // Getter 和 Setter
+    public Long getDefaultCity() {
+        return defaultCity;
+    }
+
+    public void setDefaultCity(Long defaultCity) {
+        this.defaultCity = defaultCity;
+    }
 
     // Constructors
     public User() {}
@@ -87,5 +97,7 @@ public class User {
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
+
+
 
 }
