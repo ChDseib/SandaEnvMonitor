@@ -15,6 +15,11 @@ public class WeatherDataServiceImpl implements WeatherDataService {
     @Autowired
     private WeatherDataRepository weatherDataRepository;
 
+    // 修改后的方法：根据 regionid 获取未来七天的天气数据
+    @Override
+    public List<WeatherData> getFutureWeather(String city) {
+        return weatherDataRepository.findTop7ByCityOrderByFxDateDesc(city);
+    }
     @Override
     public List<WeatherData> getAllWeatherData() {
         return weatherDataRepository.findAll();

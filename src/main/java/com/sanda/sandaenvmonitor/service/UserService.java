@@ -8,4 +8,6 @@ public interface UserService {
     void registerUser(User user) throws Exception;
     User findByUsername(String username);
 
+
+    User getCurrentUser();
 }

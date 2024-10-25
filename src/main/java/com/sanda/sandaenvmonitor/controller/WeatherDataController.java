@@ -3,8 +3,10 @@
 package com.sanda.sandaenvmonitor.controller;
 
 import com.sanda.sandaenvmonitor.model.WeatherData;
+import com.sanda.sandaenvmonitor.service.UserService;
 import com.sanda.sandaenvmonitor.service.WeatherDataService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,15 +18,20 @@ public class WeatherDataController {
 
     @Autowired
     private WeatherDataService weatherDataService;
+    @Autowired
+    private UserService userService; // 假设已实现 UserService，用于获取用户信息
 
     @GetMapping("/current")
     public WeatherData getCurrentWeather() {
         return weatherDataService.getCurrentWeather();
     }
 
+
     @GetMapping("/future")
-    public List<WeatherData> getFutureWeather() {
-        return weatherDataService.getFutureWeather();
+    public ResponseEntity<List<WeatherData>> getFutureWeather() {
+        String city = String.valueOf(userService.getCurrentUser().getDefaultCity());
+        List<WeatherData> futureWeather = weatherDataService.getFutureWeather(city);
+        return ResponseEntity.ok(futureWeather);
     }
 
     @GetMapping("/all")
