@@ -1202,38 +1202,35 @@
         // 实现设置界面
         window.location.href = '/settings'; // Replace '/settings' with the actual URL of your settings page
     }
-    $(function() {read
+    $(function() {
         // 初始化模糊搜索
-        $(document).ready(function() {
-            $("#citySearch").autocomplete({
-                source: function(request, response) {
-                    $.ajax({
-                        url: "/api/regions/search",
-                        data: { query: request.term },
-                        success: function(data) {
-                            console.log(data); // 调试用
-                            response($.map(data, function(region) {
-                                return {
-                                    label: region.name,  // 显示在联想列表中的内容
-                                    value: region.name,  // 输入框显示的内容
-                                    id: region.id        // 城市的唯一 ID
-                                };
-                            }));
-                        },
-                        error: function() {
-                            alert('城市搜索失败，请稍后再试。');
-                        }
-                    });
-                },
-                minLength: 1, // 输入一个字符后即触发搜索
-                select: function(event, ui) {
-                    $("#citySearch").data('selected-id', ui.item.id);
-                    console.log("Selected city ID:", ui.item.id);  // 调试用
-                }
-            });
+        $("#citySearch").autocomplete({
+            source: function(request, response) {
+                $.ajax({
+                    url: "/api/regions/search",
+                    data: { query: request.term },
+                    success: function(data) {
+                        console.log(data); // 调试用
+                        response($.map(data, function(region) {
+                            return {
+                                label: region.name,  // 显示在联想列表中的内容
+                                value: region.name,  // 输入框显示的内容
+                                id: region.id        // 城市的唯一 ID
+                            };
+                        }));
+                    },
+                    error: function() {
+                        alert('城市搜索失败，请稍后再试。');
+                    }
+                });
+            },
+            minLength: 1, // 输入一个字符后即触发搜索
+            select: function(event, ui) {
+                $("#citySearch").data('selected-id', ui.item.id);
+                console.log("Selected city ID:", ui.item.id);  // 调试用
+            }
         });
     });
-
     // 添加订阅功能
     $("#addCityBtn").click(function() {
         const cityName = $("#citySearch").val();
@@ -1258,6 +1255,7 @@
             }
         });
     });
+
     function getWeather(code) {
 
         fetch(`https://devapi.qweather.com/v7/weather/7d?location=${code}&key=8226ccf6174041f0bc6a4e9bb078bd05`)
@@ -1310,7 +1308,6 @@
                             setDefaultCity(selectedRegionId);
                             currentRegionId = selectedRegionId; // 更新当前城市 ID
                             fetchAllData();
-
                             // 更新 UI
                             $(".subscription-item").removeClass("default-city");
                             $(this).addClass("default-city");
