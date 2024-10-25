@@ -626,35 +626,36 @@
     </div>
 
     <!-- 未来天气预报模块 -->
+    <!-- 未来天气预报模块 -->
     <div class="weather-module" id="future-weather">
         <div class="module-content">
             <h2>未来七天天气预报</h2>
             <div class="data-item">
-                <h3>今天 (<span id="future-date-0">--</span>)</h3>
+                <h3><span id="future-day-0">--</span> (<span id="future-date-0">--</span>)</h3>
                 <p class="value" id="future-temp-0">--</p>
             </div>
             <div class="data-item">
-                <h3>星期二 (<span id="future-date-1">--</span>)</h3>
+                <h3><span id="future-day-1">--</span> (<span id="future-date-1">--</span>)</h3>
                 <p class="value" id="future-temp-1">--</p>
             </div>
             <div class="data-item">
-                <h3>星期三 (<span id="future-date-2">--</span>)</h3>
+                <h3><span id="future-day-2">--</span> (<span id="future-date-2">--</span>)</h3>
                 <p class="value" id="future-temp-2">--</p>
             </div>
             <div class="data-item">
-                <h3>星期四 (<span id="future-date-3">--</span>)</h3>
+                <h3><span id="future-day-3">--</span> (<span id="future-date-3">--</span>)</h3>
                 <p class="value" id="future-temp-3">--</p>
             </div>
             <div class="data-item">
-                <h3>星期五 (<span id="future-date-4">--</span>)</h3>
+                <h3><span id="future-day-4">--</span> (<span id="future-date-4">--</span>)</h3>
                 <p class="value" id="future-temp-4">--</p>
             </div>
             <div class="data-item">
-                <h3>星期六 (<span id="future-date-5">--</span>)</h3>
+                <h3><span id="future-day-5">--</span> (<span id="future-date-5">--</span>)</h3>
                 <p class="value" id="future-temp-5">--</p>
             </div>
             <div class="data-item">
-                <h3>星期日 (<span id="future-date-6">--</span>)</h3>
+                <h3><span id="future-day-6">--</span> (<span id="future-date-6">--</span>)</h3>
                 <p class="value" id="future-temp-6">--</p>
             </div>
             <div class="chart-overlay">
@@ -662,7 +663,6 @@
             </div>
         </div>
     </div>
-
     <!-- 天气状态模块 -->
     <div class="weather-module" id="weather-state">
         <div class="module-content">
@@ -982,20 +982,54 @@
         fetch('/api/weather/future')
             .then(response => response.json())
             .then(data => {
+                // 确保数据按日期排序
                 data.sort((a, b) => new Date(a.fxDate) - new Date(b.fxDate));
                 if (data && data.length > 0) {
-                    const labels = data.map(d => d.fxDate); // 假设 fxDate 是日期字段
-                    const temperatures = data.map(d => parseFloat(d.tempMax) || 0);
-                    const weatherDescriptions = data.map(d => d.textDay || "--");
+                    const labels = [];
+                    const temperatures = [];
 
-                    // 更新HTML中的未来天气数据项
+                    // 获取今天的日期（设置时间为午夜）
+                    const today = new Date();
+                    today.setHours(0,0,0,0);
+
+                    // 星期名称数组
+                    const dayNames = ["星期日","星期一","星期二","星期三","星期四","星期五","星期六"];
+
                     data.forEach((d, index) => {
                         if (index < 7) { // 确保不超过7天
                             const dateElement = document.getElementById(`future-date-${index}`);
                             const tempElement = document.getElementById(`future-temp-${index}`);
-                            if (dateElement && tempElement) {
-                                dateElement.innerText = d.fxDate || "--";
+                            const dayElement = document.getElementById(`future-day-${index}`);
+                            if (dateElement && tempElement && dayElement) {
+                                const date = new Date(d.fxDate);
+                                date.setHours(0,0,0,0);
+
+                                // 更新日期，格式为 MM月DD日
+                                dateElement.innerText = `${date.getMonth()+1}月${date.getDate()}日`;
+
+                                // 计算与今天的天数差
+                                const diffTime = date.getTime() - today.getTime();
+                                const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
+
+                                // 获取星期名称
+                                let dayName;
+                                if (diffDays === 0) {
+                                    dayName = "今天";
+                                } else if (diffDays === 1) {
+                                    dayName = "明天";
+                                } else if (diffDays === 2) {
+                                    dayName = "后天";
+                                } else {
+                                    dayName = dayNames[date.getDay()];
+                                }
+                                dayElement.innerText = dayName;
+
+                                // 更新温度和描述
                                 tempElement.innerText = (d.tempMax ? d.tempMax + "°C" : "--") + ", " + (d.textDay || "--");
+
+                                // 准备图表数据
+                                labels.push(dayName);
+                                temperatures.push(parseFloat(d.tempMax) || 0);
                             }
                         }
                     });
@@ -1008,22 +1042,22 @@
             })
             .catch(error => {
                 console.error('Error fetching future weather:', error);
-                // 使用默认死数据
-                const defaultLabels = ['x月x', 'x月x', 'x月x', 'x月x', 'x月x', 'x月x', 'x月x'];
-                const defaultTemps = [0, 0, 0, 0, 0, 0, 0];
-                const defaultDescriptions = ["晴天", "晴天", "晴天", "晴天", "晴天", "晴天", "晴天"];
+                // 使用默认占位数据
+                const defaultLabels = ['未知', '未知', '未知', '未知', '未知', '未知', '未知'];
+                const defaultDates = ['x月x日', 'x月x日', 'x月x日', 'x月x日', 'x月x日', 'x月x日', 'x月x日'];
+                const defaultTemps = ['--', '--', '--', '--', '--', '--', '--'];
 
                 for (let i = 0; i < 7; i++) {
-                    document.getElementById(`future-date-${i}`).innerText = defaultLabels[i];
-                    document.getElementById(`future-temp-${i}`).innerText = defaultTemps[i] + "°C, " + defaultDescriptions[i];
+                    document.getElementById(`future-day-${i}`).innerText = defaultLabels[i];
+                    document.getElementById(`future-date-${i}`).innerText = defaultDates[i];
+                    document.getElementById(`future-temp-${i}`).innerText = defaultTemps[i];
                 }
 
                 futureWeatherChart.data.labels = defaultLabels;
-                futureWeatherChart.data.datasets[0].data = defaultTemps;
+                futureWeatherChart.data.datasets[0].data = [0, 0, 0, 0, 0, 0, 0];
                 futureWeatherChart.update();
             });
     }
-
     //菜单栏
 
     document.addEventListener("DOMContentLoaded", function () {
