@@ -902,7 +902,35 @@
             }
         });
     }
-
+    function fetchAndProcessFutureWeather(callback) {
+        if (!currentRegionId) {
+            console.error("当前城市 ID 未设置。");
+            return;
+        }
+        console.log("Fetching future weather data for regionId:", currentRegionId);
+        fetch(`/api/weather/future?regionId=${currentRegionId}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log("Fetched Future Weather Data:", data);
+                if (Array.isArray(data) && data.length > 0) {
+                    data.sort((a, b) => new Date(a.fxDate) - new Date(b.fxDate));
+                    const firstRecord = data[0];
+                    console.log("First Record after Sorting:", firstRecord);
+                    callback(firstRecord);
+                } else {
+                    throw new Error("无效的数据格式或数据为空");
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching future weather data:', error);
+                callback(null);
+            });
+    }
     // 获取所有数据
     function fetchAllData() {
         fetchCurrentWeather();
@@ -917,37 +945,27 @@
     // 获取当前天气数据
     // 获取当前天气数据
     function fetchCurrentWeather() {
-        if (!currentRegionId) {
-            console.error("当前城市 ID 未设置。");
-            return;
-        }
-        fetch(`/api/weather/current?regionId=${currentRegionId}`)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (Array.isArray(data) && data.length > 0) {
-                    const latestData = data[0]; // 使用第一条记录
-                    document.getElementById('current-temp').innerText = latestData.tempMax + "°C";
-                    document.getElementById('current-humidity').innerText = latestData.humidity + "%";
-                    document.getElementById('current-uv').innerText = latestData.uvIndex;
+        fetchAndProcessFutureWeather(function(firstRecord) {
+            if (firstRecord) {
+                console.log("Current Weather - Pressure:", firstRecord.pressure);
+                console.log("Current Weather - Visibility:", firstRecord.visibility);
+                console.log("Current Weather - Precipitation:", firstRecord.precip);
+                console.log("Current Weather - TempMax:", firstRecord.tempMax);
+                console.log("Current Weather - Humidity:", firstRecord.humidity);
+                console.log("Current Weather - UV Index:", firstRecord.uvIndex);
 
-                    // 更新图表
-                    currentWeatherChart.data.datasets[0].data = [
-                        parseFloat(latestData.tempMax) || 0,
-                        parseFloat(latestData.humidity) || 0,
-                        parseFloat(latestData.uvIndex) || 0
-                    ];
-                    currentWeatherChart.update();
-                } else {
-                    throw new Error("无效的数据格式或数据为空");
-                }
-            })
-            .catch(error => {
-                console.error('Error fetching current weather:', error);
+                document.getElementById('current-temp').innerText = firstRecord.tempMax + "°C";
+                document.getElementById('current-humidity').innerText = firstRecord.humidity + "%";
+                document.getElementById('current-uv').innerText = firstRecord.uvIndex;
+
+                // 更新图表
+                currentWeatherChart.data.datasets[0].data = [
+                    parseFloat(firstRecord.tempMax) || 0,
+                    parseFloat(firstRecord.humidity) || 0,
+                    parseFloat(firstRecord.uvIndex) || 0
+                ];
+                currentWeatherChart.update();
+            } else {
                 // 使用默认数据
                 document.getElementById('current-temp').innerText = "0°C";
                 document.getElementById('current-humidity').innerText = "0%";
@@ -955,44 +973,44 @@
 
                 currentWeatherChart.data.datasets[0].data = [25, 65, 3];
                 currentWeatherChart.update();
-            });
+            }
+        });
     }    // 获取气象数据
-    // 获取气象数据
     function fetchPressureData() {
-        if (!currentRegionId) {
-            console.error("当前城市 ID 未设置。");
-            return;
-        }
-        fetch(`/api/weather/current?regionId=${currentRegionId}`) // 确保传递 regionId
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (Array.isArray(data) && data.length > 0) {
-                    const latestData = data[0]; // 使用第一条记录
-                    document.getElementById('pressure').innerText = latestData.pressure + " hPa";
-                    document.getElementById('visibility').innerText = latestData.visibility + " km";
-                    document.getElementById('air-quality').innerText = latestData.airQuality || "--";
-                    document.getElementById('precip').innerText = latestData.precip + " mm";
-                    // 更新图表
-                    pressureDataChart.data.datasets[0].data = [
-                        parseFloat(latestData.pressure) || 0,
-                        parseFloat(latestData.visibility) || 0,
-                        parseFloat(latestData.airQuality) || 0, // 移除 airQuality
-                        parseFloat(latestData.precip) || 0
-                    ];
-                    // 如果移除了 airQuality，确保图表数据长度匹配
-                    pressureDataChart.data.labels = ['大气压 (hPa)', '能见度 (km)', '降水量 (mm)'];
-                    pressureDataChart.update();
-                    console.log("Fetched Pressure Data:", data);
-                } else {
-                    throw new Error("无效的数据格式或数据为空");
-                }
-            })
-    }    // 获取未来天气数据
+        fetchAndProcessFutureWeather(function(firstRecord) {
+            if (firstRecord) {
+                console.log("Pressure Data - Pressure:", firstRecord.pressure);
+                console.log("Pressure Data - Visibility:", firstRecord.visibility);
+                console.log("Pressure Data - Precipitation:", firstRecord.precip);
+
+                document.getElementById('pressure').innerText = firstRecord.pressure + " hPa";
+                document.getElementById('visibility').innerText = firstRecord.visibility + " km";
+                // 如果后端不提供 airQuality，可以移除以下行或设置为默认值
+                // document.getElementById('air-quality').innerText = firstRecord.airQuality || "--";
+                document.getElementById('precip').innerText = firstRecord.precip + " mm";
+
+                // 更新图表
+                pressureDataChart.data.datasets[0].data = [
+                    parseFloat(firstRecord.pressure) || 0,
+                    parseFloat(firstRecord.visibility) || 0,
+                    // parseFloat(firstRecord.airQuality) || 0, // 移除 airQuality
+                    parseFloat(firstRecord.precip) || 0
+                ];
+                pressureDataChart.data.labels = ['大气压 (hPa)', '能见度 (km)', '降水量 (mm)'];
+                pressureDataChart.update();
+            } else {
+                // 使用默认数据
+                document.getElementById('pressure').innerText = "0 hPa";
+                document.getElementById('visibility').innerText = "0 km";
+                // document.getElementById('air-quality').innerText = "0 (良好)"; // 移除 airQuality
+                document.getElementById('precip').innerText = "0 mm";
+
+                pressureDataChart.data.datasets[0].data = [1013, 110, 225];
+                pressureDataChart.data.labels = ['大气压 (hPa)', '能见度 (km)', '降水量 (mm)'];
+                pressureDataChart.update();
+            }
+        });
+    }
     function fetchFutureWeather() {
         if (!currentRegionId) {
             console.error("当前城市 ID 未设置。");
@@ -1081,96 +1099,75 @@
     // 获取天气状态数据
     // 获取天气状态数据
     function fetchWeatherState() {
-        if (!currentRegionId) {
-            console.error("当前城市 ID 未设置。");
-            return;
-        }
-        fetch(`/api/weather/all?regionId=${currentRegionId}`) // 确保传递 regionId
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (data && data.length > 0) {
-                    // 计算各天气状态的数量
-                    const stateCounts = data.reduce((acc, curr) => {
-                        const state = curr.textDay || "未知";
-                        acc[state] = (acc[state] || 0) + 1;
-                        return acc;
-                    }, {});
+        fetchAndProcessFutureWeather(function(firstRecord) {
+            if (firstRecord) {
+                console.log("Weather State - Current State:", firstRecord.textDay);
 
-                    // 获取主要天气状态（假设最新的数据为当前状态）
-                    document.getElementById('current-state').innerText = data[0].textDay || "--";
+                document.getElementById('current-state').innerText = firstRecord.textDay || "--";
 
-                    // 更新图表数据，根据实际天气状态调整
-                    weatherStateChart.data.datasets[0].data = [
-                        stateCounts['晴天'] || 0,
-                        stateCounts['多云'] || 0,
-                        stateCounts['小雨'] || 0
-                    ];
-                    weatherStateChart.update();
-                }
-            })
-            .catch(error => {
-                console.error('Error fetching weather state:', error);
+                // 假设 firstRecord.text_day 包含当前天气状态
+                // 根据实际情况调整 stateCounts
+                const stateCounts = {
+                    '晴天': firstRecord.textDay === '晴天' ? 1 : 0,
+                    '多云': firstRecord.textDay === '多云' ? 1 : 0,
+                    '小雨': firstRecord.textDay === '小雨' ? 1 : 0
+                };
+
+                // 更新图表数据
+                weatherStateChart.data.datasets[0].data = [
+                    stateCounts['晴天'] || 0,
+                    stateCounts['多云'] || 0,
+                    stateCounts['小雨'] || 0
+                ];
+
+                weatherStateChart.update();
+            } else {
                 // 使用默认数据
                 document.getElementById('current-state').innerText = "晴天";
 
                 weatherStateChart.data.datasets[0].data = [70, 20, 10];
                 weatherStateChart.update();
-            });
-    }
-    // 获取重要警报数据
+            }
+        });
+    }    // 获取重要警报数据
     // 获取重要警报数据
     function fetchAlertData() {
-        if (!currentRegionId) {
-            console.error("当前城市 ID 未设置。");
-            return;
-        }
-        fetch(`/api/weather/all?regionId=${currentRegionId}`) // 确保传递 regionId
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (data && data.length > 0) {
-                    // 计算各警报类型的数量
-                    const alertCounts = data.reduce((acc, curr) => {
-                        const alertType = curr.alertType || "未知";
-                        acc[alertType] = (acc[alertType] || 0) + 1;
-                        return acc;
-                    }, {});
+        fetchAndProcessFutureWeather(function(firstRecord) {
+            if (firstRecord) {
+                console.log("Alert Data - Alert Type:", firstRecord.alertType);
+                console.log("Alert Data - Severity:", firstRecord.severity);
+                console.log("Alert Data - Alert Time:", firstRecord.fxDate);
 
-                    // 获取主要警报信息（假设最新的数据为当前警报）
-                    const latestAlert = data.find(d => d.alertType) || {};
-                    document.getElementById('alert-type').innerText = latestAlert.alertType || "台风预警";
-                    document.getElementById('alert-severity').innerText = latestAlert.severity || "高";
-                    document.getElementById('alert-time').innerText = latestAlert.fxDate ? new Date(latestAlert.fxDate).toLocaleString() : "2024-05-01 08:00";
+                document.getElementById('alert-type').innerText = firstRecord.alertType || "暂无预警";
+                document.getElementById('alert-severity').innerText = firstRecord.severity || "无";
+                document.getElementById('alert-time').innerText = firstRecord.fxDate ? new Date(firstRecord.fxDate).toLocaleString() : "2024-05-01 08:00";
 
-                    // 更新图表数据，根据实际警报类型调整
-                    alertDataChart.data.datasets[0].data = [
-                        alertCounts['台风预警'] || 0,
-                        alertCounts['暴雨预警'] || 0,
-                        alertCounts['寒潮预警'] || 0
-                    ];
-                    alertDataChart.update();
-                }
-            })
-            .catch(error => {
-                console.error('Error fetching alert data:', error);
+                // 假设 alertType 包含 '台风预警', '暴雨预警', '寒潮预警'
+                const alertCounts = {
+                    '台风预警': firstRecord.alertType === '台风预警' ? 1 : 0,
+                    '暴雨预警': firstRecord.alertType === '暴雨预警' ? 1 : 0,
+                    '寒潮预警': firstRecord.alertType === '寒潮预警' ? 1 : 0
+                };
+
+                // 更新图表数据
+                alertDataChart.data.datasets[0].data = [
+                    alertCounts['台风预警'] || 0,
+                    alertCounts['暴雨预警'] || 0,
+                    alertCounts['寒潮预警'] || 0
+                ];
+                alertDataChart.update();
+            } else {
                 // 使用默认数据
-                document.getElementById('alert-type').innerText = "台风预警";
-                document.getElementById('alert-severity').innerText = "高";
+                document.getElementById('alert-type').innerText = "暂无预警";
+                document.getElementById('alert-severity').innerText = "无";
                 document.getElementById('alert-time').innerText = "2024-05-01 08:00";
 
                 alertDataChart.data.datasets[0].data = [7, 2, 1];
                 alertDataChart.update();
-            });
-    }    document.addEventListener("DOMContentLoaded", function () {
+            }
+        });
+    }
+    document.addEventListener("DOMContentLoaded", function () {
         const sidebar = document.getElementById('sidebar');
         const sidebarToggle = document.getElementById('sidebarToggle');
         fetchDefaultCityWeather();
@@ -1203,7 +1200,7 @@
 
     function openSettings() {
         // 实现设置界面
-        alert('设置功能尚未实现。');
+        window.location.href = '/settings'; // Replace '/settings' with the actual URL of your settings page
     }
     $(function() {read
         // 初始化模糊搜索
