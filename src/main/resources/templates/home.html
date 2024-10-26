@@ -1249,6 +1249,7 @@
             success: function(response) {
                 alert("成功订阅城市：" + cityName);
                 fetchSubscriptions(); // 刷新用户的订阅列表
+                getWeather(regionId); // 获取天气数据
             },
             error: function() {
                 alert("添加订阅失败，请稍后再试。");
@@ -1257,7 +1258,6 @@
     });
 
     function getWeather(code) {
-
         fetch(`https://devapi.qweather.com/v7/weather/7d?location=${code}&key=8226ccf6174041f0bc6a4e9bb078bd05`)
             .then(response => {
                 if (!response.ok) {
@@ -1311,6 +1311,7 @@
                             // 更新 UI
                             $(".subscription-item").removeClass("default-city");
                             $(this).addClass("default-city");
+                            getWeather(selectedRegionId)
                         });
 
                     if (region.id.toString() === defaultCityId) {
