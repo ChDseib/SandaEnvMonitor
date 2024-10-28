@@ -10,4 +10,10 @@ public interface UserService {
 
 
     User getCurrentUser();
+
+    void saveUser(User user);
+
+    void saveVerificationToken(User user, String token);
+
+    boolean verifyToken(String token);
 }
