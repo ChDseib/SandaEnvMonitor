@@ -11,4 +11,10 @@ public interface UserService {
     void sendVerificationCode(String email) throws Exception;
 
     User getCurrentUser();
+
+    void saveUser(User user);
+
+    void saveVerificationToken(User user, String token);
+
+    boolean verifyToken(String token);
 }
