@@ -5,9 +5,10 @@ package com.sanda.sandaenvmonitor.service;
 import com.sanda.sandaenvmonitor.model.User;
 
 public interface UserService {
-    void registerUser(User user) throws Exception;
-    User findByUsername(String username);
 
+    User findByUsername(String username);
+    void registerUser(User user, String verificationCode) throws Exception;
+    void sendVerificationCode(String email) throws Exception;
 
     User getCurrentUser();
 }
