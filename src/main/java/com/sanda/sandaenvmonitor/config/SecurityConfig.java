@@ -24,7 +24,7 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests(authorize -> authorize
                         // 允许匿名用户访问 /register 和 /login 页面
-                        .requestMatchers("/login", "/register", "/css/**", "/js/**", "/images/**").permitAll()
+                        .requestMatchers("/login", "/register", "/api/users/send-verification-code","/css/**", "/js/**", "/images/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
