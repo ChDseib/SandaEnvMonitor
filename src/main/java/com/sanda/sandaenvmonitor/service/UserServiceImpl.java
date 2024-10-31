@@ -108,4 +108,19 @@ public class UserServiceImpl implements UserService {
         return userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
     }
+
+    @Override
+    public void saveUser(User user) {
+
+    }
+
+    @Override
+    public void saveVerificationToken(User user, String token) {
+
+    }
+
+    @Override
+    public boolean verifyToken(String token) {
+        return false;
+    }
 }
