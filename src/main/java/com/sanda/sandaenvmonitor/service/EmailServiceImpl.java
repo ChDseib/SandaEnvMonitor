@@ -15,6 +15,7 @@ public class EmailServiceImpl implements EmailService {
     @Override
     public void sendVerificationCode(String toEmail, String code) {
         SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom("13386278731@163.com");
         message.setTo(toEmail);
         message.setSubject("邮箱验证码");
         message.setText("您的验证码是：" + code + "。请在5分钟内使用。");
