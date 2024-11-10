@@ -73,6 +73,7 @@ public class UserServiceImpl implements UserService {
 
         // 验证验证码
         VerificationCode storedCode = verificationCodeRepository.findByEmail(user.getEmail());
+        user.setPassword(passwordEncoder.encode(user.getPassword()));  // 对密码进行加密
         if (storedCode == null) {
             throw new Exception("验证码不存在，请先获取验证码。");
         }
